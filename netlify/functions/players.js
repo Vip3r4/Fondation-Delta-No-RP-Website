@@ -1,5 +1,8 @@
 exports.handler = async () => {
-    const res = await fetch('https://api.scpslgame.com/serverinfo.php?id=36034&key=iVJbgCO0g5Tnfrc6rlI/2J2R&players=true');
+    const id = process.env.SCPSL_ID;
+    const key = process.env.SCPSL_KEY;
+
+    const res = await fetch(`https://api.scpslgame.com/serverinfo.php?id=${id}&key=${key}&players=true`);
     const data = await res.json();
 
     return {
