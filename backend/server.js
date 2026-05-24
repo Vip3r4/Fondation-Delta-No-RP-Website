@@ -41,25 +41,31 @@ app.get('/api/server-info', async (req, res) => {
 
 app.post('/api/game/stats', async (req, res) => {
     const { steam_id, action } = req.body;
-    
+    const STEAM_API_KEY = process.env.apiKey;
+
     try {
-        const apiKey = process.env.apiKey;
-        const steamUrl = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${steam_id}`;
-        const steamRes = await fetch(steamUrl);
-        const steamData = await steamRes.json();
-        const avatar = steamData.response.players[0]?.avatarfull || 'images/logo (1).svg';
+        const response = await fetch(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${STEAM_API_KEY}&steamids=${steam_id}`);
+        const data = await response.json();
+        const playerInfo = data.response.players[0] || {};
+        
+        const username = playerInfo.personaname || 'Joueur Inconnu';
+        const avatar = playerInfo.avatarfull || 'images/logo (1).svg';
 
         const column = action === 'kill' ? 'kills' : 'deaths';
         const query = `
-            INSERT INTO users (steam_id, discord_id, discord_username, ${column}, steam_avatar) 
-            VALUES ($1, $1, 'Joueur En Jeu', 1, $2)
+            INSERT INTO users (steam_id, discord_username, steam_avatar, ${column}) 
+            VALUES ($1, $2, $3, 1)
             ON CONFLICT (steam_id) 
-            DO UPDATE SET ${column} = users.${column} + 1, steam_avatar = EXCLUDED.steam_avatar;
+            DO UPDATE SET 
+                ${column} = users.${column} + 1,
+                discord_username = EXCLUDED.discord_username,
+                steam_avatar = EXCLUDED.steam_avatar;
         `;
 
-        await pool.query(query, [steam_id, avatar]);
+        await pool.query(query, [steam_id, username, avatar]);
         res.json({ success: true });
     } catch (error) {
+        console.error("Erreur API Steam/BDD :", error);
         res.status(500).json({ error: "Erreur serveur" });
     }
 });
