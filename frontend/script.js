@@ -59,14 +59,14 @@ function copyIP(ip) {
 
 async function fetchPlayerCount() {
     try {
-        const res = await fetch('/.netlify/functions/players');
-        const data = await res.json();
-        const display = document.getElementById('player-count');
-        if (data.Success && data.Servers.length > 0) {
-            display.textContent = data.Servers[0].Players;
-        }
-    } catch (err) {
-        console.error('Erreur API Joueurs');
+        const id = process.env.SCPSL_ID;
+        const key = process.env.SCPSL_KEY;
+        const response = await fetch(`https://api.scpslgame.com/serverinfo.php?id=${id}&key=${key}&players=true`);
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Erreur serveur" });
     }
 }
 
