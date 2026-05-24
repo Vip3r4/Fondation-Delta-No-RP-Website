@@ -59,10 +59,12 @@ function copyIP(ip) {
 
 async function fetchPlayerCount() {
     try {
-        const response = await fetch('/api/server-info');
+        const response = await fetch('http://83.150.218.120:5000/api/server-info');
+        
         if (!response.ok) throw new Error("Erreur réseau");
+        
         const data = await response.json();
-
+        
         const countElement = document.getElementById('player-count');
         if (countElement) {
             countElement.innerText = `${data.players} / ${data.max_players}`;
