@@ -59,14 +59,16 @@ function copyIP(ip) {
 
 async function fetchPlayerCount() {
     try {
-        const id = process.env.SCPSL_ID;
-        const key = process.env.SCPSL_KEY;
-        const response = await fetch(`https://api.scpslgame.com/serverinfo.php?id=${id}&key=${key}&players=true`);
+        const response = await fetch('http://83.150.218.120:5000/api/server-info');
+        if (!response.ok) throw new Error("Erreur réseau");
         const data = await response.json();
-        res.json(data);
+
+        const countElement = document.getElementById('player-count');
+        if (countElement) {
+            countElement.innerText = `${data.players} / ${data.max_players}`;
+        }
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Erreur serveur" });
+        console.error("Erreur de récupération :", error);
     }
 }
 
