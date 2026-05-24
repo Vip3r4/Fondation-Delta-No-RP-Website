@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fondation Delta - À Propos</title>
+    <link rel="stylesheet" href="css/style-apropos.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="icon" href="images/logo (1).svg">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo-container">
+            <div class="navbar-logo">
+                <img src="images/logo (1).svg" alt="logo">
+                <div>
+                    <h2>Fondation Delta NoRP</h2>
+                    <span>Serveur SCP:SL Français</span>
+                </div>
+            </div>
+        </a>
+        <ul>
+            <li>
+                <a href="index.html">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    Accueil
+                </a>
+            </li>
+            <li>
+                <a href="wiki.html">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    Wiki
+                </a>
+            </li>
+            <li class="nav-dropdown">
+                <a href="javascript:void(0)" class="dropbtn filter-btn" onclick="toggleDropdown()">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+                    Classements 
+                    <svg class="arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9L12 15L18 9"/>
+                    </svg>
+                </a>
+                <div id="filterMenu" class="filter-content">
+                    <a href="leaderboard-time.html">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        Temps de jeu
+                    </a>
+                    <a href="leaderboard-kills.html">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path><path d="M13 19l6-6"></path><path d="M16 16l4 4"></path><path d="M19 13l3 3"></path></svg>
+                        Kills
+                    </a>
+                </div>
+            </li>
+            <li>
+                <a href="apropos.html" class="active">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    À Propos
+                </a>
+            </li>
+            <li>
+                <a href="contact.html">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    Contact
+                </a>
+            </li>
+        </ul>
+        <div class="navbar-right">
+            <a class="navbar-cta" href="login.html">
+                <svg class="nav-icon-cta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                Connexion
+            </a>
+        </div>
+    </nav>
+
+    <div class="grid-bg"></div>
+
+    <main class="apropos-main">
+        <section class="apropos-header anim-fade-up">
+            <h1 class="anim-fade-up">À Propos</h1>
+            <p class="anim-fade-up">
+                Découvrez notre communauté, 
+                l'équipe de gestion du serveur ainsi que toutes les informations importantes concernant le site et le serveur.
+            </p>
+        </section>
+
+        <section class="apropos-categories">
+            <div class="categories-container">
+                <button class="category-btn active anim-fade-up" data-category="who" style="--d: 100ms">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle category-icon" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                        <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94"/>
+                    </svg>
+                    <span>Qui sommes nous ?</span>
+                </button>
+                <button class="category-btn anim-fade-up" data-category="staff" style="--d: 200ms">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-gear category-icon" viewBox="0 0 16 16">
+                        <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m.256 7a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1zm3.63-4.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382zM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0"/>
+                    </svg>
+                    <span>Le staff</span>
+                </button>
+                <button class="category-btn anim-fade-up" data-category="ml" style="--d: 300ms">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bank category-icon" viewBox="0 0 16 16">
+                        <path d="m8 0 6.61 3h.89a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H15v7a.5.5 0 0 1 .485.38l.5 2a.498.498 0 0 1-.485.62H.5a.498.498 0 0 1-.485-.62l.5-2A.5.5 0 0 1 1 13V6H.5a.5.5 0 0 1-.5-.5v-2A.5.5 0 0 1 .5 3h.89zM3.777 3h8.447L8 1zM2 6v7h1V6zm2 0v7h2.5V6zm3.5 0v7h1V6zm2 0v7H12V6zM13 6v7h1V6zm2-1V4H1v1zm-.39 9H1.39l-.25 1h13.72z"/>
+                    </svg>
+                    <span>Mentions légales</span>
+                </button>
+                <button class="category-btn anim-fade-up" data-category="rgpd" style="--d: 400ms">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-incognito caterogy-icon" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="m4.736 1.968-.892 3.269-.014.058C2.113 5.568 1 6.006 1 6.5 1 7.328 4.134 8 8 8s7-.672 7-1.5c0-.494-1.113-.932-2.83-1.205l-.014-.058-.892-3.27c-.146-.533-.698-.849-1.239-.734C9.411 1.363 8.62 1.5 8 1.5s-1.411-.136-2.025-.267c-.541-.115-1.093.2-1.239.735m.015 3.867a.25.25 0 0 1 .274-.224c.9.092 1.91.143 2.975.143a30 30 0 0 0 2.975-.143.25.25 0 0 1 .05.498c-.918.093-1.944.145-3.025.145s-2.107-.052-3.025-.145a.25.25 0 0 1-.224-.274M3.5 10h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5m-1.5.5q.001-.264.085-.5H2a.5.5 0 0 1 0-1h3.5a1.5 1.5 0 0 1 1.488 1.312 3.5 3.5 0 0 1 2.024 0A1.5 1.5 0 0 1 10.5 9H14a.5.5 0 0 1 0 1h-.085q.084.236.085.5v1a2.5 2.5 0 0 1-5 0v-.14l-.21-.07a2.5 2.5 0 0 0-1.58 0l-.21.07v.14a2.5 2.5 0 0 1-5 0zm8.5-.5h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5"/>
+                    </svg>
+                    <span>Politique de confidentialité (RGPD)</span>
+                </button>
+            </div>
+        </section>
+
+        <section id="who" class="apropos-section active">
+            <div class="section-content">
+                <h2>Présentation</h2>
+                <div class="who-grid">
+                    <div class="who-card anim-fade-up">
+                        <h3>Qui sommes nous ?</h3>
+                        <p>La Fondation Delta est un serveur NoRP SCP: Secret Laboratory. Notre objectif est de proposer la meilleure expérience tout en garantissant un environnement de jeu sérieux, équilibré et agréable pour tous les joueurs, grâce à nos plugins et mappings uniques.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="staff" class="apropos-section">
+            <div class="section-content">
+                <h2>Les membres de l'équipe</h2>
+                
+                <div class="staff-category">
+                    <h3 class="staff-category-title">Conseil 05</h3>
+                    <div class="staff-grid">
+                        <div class="staff-card anim-fade-up" style="--d: 100ms">
+                            <div class="staff-header">
+                                <img src="../Frontend/images/vip3r.png" alt="Avatar" class="staff-avatar">
+                                <div class="staff-info">
+                                    <h4>Vip3r</h4>
+                                    <span class="staff-grade fondateur">Conseil 05</span>
+                                </div>
+                            </div>
+                            <p class="staff-bio">Fondateur de la Fondation Delta et développeur principal</p>
+                        </div>
+                        <div class="staff-card anim-fade-up" style="--d: 150ms">
+                            <div class="staff-header">
+                                <img src="../Frontend/images/ysuzen.png" alt="Avatar" class="staff-avatar">
+                                <div class="staff-info">
+                                    <h4>Ysuzen</h4>
+                                    <span class="staff-grade fondateur">Conseil 05</span>
+                                </div>
+                            </div>
+                            <p class="staff-bio">Fondateur de la Fondation Delta et développeur principal</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="staff-category">
+                    <h3 class="staff-category-title">Recrues de la Sécurité Interne</h3>
+                    <div class="staff-grid">
+                        <div class="staff-card anim-fade-up" style="--d: 300ms">
+                            <div class="staff-header">
+                                <img src="../Frontend/images/overgame.png" alt="Avatar" class="staff-avatar">
+                                <div class="staff-info">
+                                    <h4>Overgame</h4>
+                                    <span class="staff-grade moderateur">Recrue de la Sécurité Interne</span>
+                                </div>
+                            </div>
+                            <p class="staff-bio">Modération et support joueurs</p>
+                        </div>
+                        <div class="staff-card anim-fade-up" style="--d: 300ms">
+                            <div class="staff-header">
+                                <img src="../Frontend/images/joskow.png" alt="Avatar" class="staff-avatar">
+                                <div class="staff-info">
+                                    <h4>Joskow</h4>
+                                    <span class="staff-grade moderateur">Recrue de la Sécurité Interne</span>
+                                </div>
+                            </div>
+                            <p class="staff-bio">Modération et support joueurs</p>
+                        </div>
+                        <div class="staff-card anim-fade-up" style="--d: 300ms">
+                            <div class="staff-header">
+                                <img src="../Frontend/images/stedec.png" alt="Avatar" class="staff-avatar">
+                                <div class="staff-info">
+                                    <h4>Stedec</h4>
+                                    <span class="staff-grade moderateur">Recrue de la Sécurité Interne</span>
+                                </div>
+                            </div>
+                            <p class="staff-bio">Modération et support joueurs</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="staff-description">Le Staff de la Fondation Delta est composé de membres actifs, chargés d'assurer le bon fonctionnement du serveur. Leur rôle est de maintenir une ambiance agréable, faire respecter les règles et aider les joueurs en cas de besoin. Toujours à l'écoute, le staff est là pour garantir une expérience de jeu juste, fun et sécurisée.</p>
+            </div>
+        </section>
+
+        <section id="ml" class="apropos-section">
+            <div class="section-content">
+                <h2>Nos mentions légales</h2>
+                <div class="ml-grid">
+                    <div class="ml-card anim-fade-up" style="--d: 100ms">
+                        <h3>Éditeur du site</h3>
+                        <p>
+                            <strong>Vip3r</strong><br>
+                            Statut : Particulier<br>
+                            Email : fondationdeltanorp@gmail.com
+                        </p>
+                    </div>
+                    <div class="ml-card anim-fade-up" style="--d: 150ms">
+                        <h3>Responsable de la publication</h3>
+                        <p>Vip3r</p>
+                    </div>
+                    <div class="ml-card anim-fade-up" style="--d: 200ms">
+                        <h3>Hébergement du Site</h3>
+                        <p>
+                            <strong>Hébergeur :</strong> Netlify<br>
+                            <strong>Adresse :</strong> 610 22nd Street, Suite 315 CA 94107 San Francisco<br>
+                            <strong>Tél :</strong> +1 844-899-7312
+                        </p>
+                        <h3>Hébergement API et Database</h3>
+                        <p>
+                            <strong>Hébergeur :</strong> Yorkhost<br>
+                            <strong>Adresse :</strong> 20 rue Jacques Louis Duvivier, 78520 Limay, France<br>
+                            <strong>Tél :</strong> +33 9 72 16 56 50
+                        </p>
+                    </div>
+                    <div class="ml-card anim-fade-up" style="--d: 250ms">
+                        <h3>Propriété intellectuelle</h3>
+                        <p>L'ensemble du contenu présent sur ce site (textes, images, graphismes, logo) est protégé par le droit d'auteur. Toute reproduction ou utilisation sans autorisation est interdite.</p>
+                    </div>
+                    <div class="ml-card anim-fade-up" style="--d: 300ms">
+                        <h3>Données personnelles</h3>
+                        <p>Ce site ne collecte aucune donnée personnelle sans le consentement de l'utilisateur. Les informations éventuellement transmises sont utilisées uniquement dans le cadre du fonctionnement du serveur.</p>
+                    </div>
+                    <div class="ml-card anim-fade-up" style="--d: 350ms">
+                        <h3>Responsabilité</h3>
+                        <p>L'éditeur ne peut être tenu responsable des interruptions du site ou du serveur, ni des éventuels dysfonctionnements liés à leur utilisation.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="rgpd" class="apropos-section">
+            <div class="section-content">
+                <h2>Notre politique de confidentialité</h2>
+                <div class="rgpd-content">
+                    <div class="rgpd-section anim-fade-up" style="--d: 100ms">
+                        <h3>Dernière mise à jour : 17/02/2026</h3>
+                    </div>
+                    <div class="rgpd-section anim-fade-up" style="--d: 150ms">
+                        <h3>1. Responsable du traitement</h3>
+                        <p>
+                            <strong>Nom / Pseudo :</strong> Vip3r<br>
+                            <strong>Email :</strong> fondationdeltanorp@gmail.com
+                        </p>
+                    </div>
+                    <div class="rgpd-section anim-fade-up" style="--d: 200ms">
+                        <h3>2. Données personnelles collectées</h3>
+                        <p>Les données personnelles susceptibles d'être traitées sur ce site sont les suivantes :</p>
+                        <h4>a) Candidature staff (via le site web)</h4>
+                        <p><strong>Lors de la candidature au staff, les données suivantes sont collectées :</strong></p>
+                        <ul>
+                            <li>Adresse email (obligatoire)</li>
+                            <li>Informations renseignées volontairement par le candidat dans le formulaire</li>
+                        </ul>
+                        <h4>b) Leaderboard du serveur</h4>
+                        <p><strong>Le site affiche un leaderboard lié au serveur de jeu SCP: Secret Laboratory, incluant :</strong></p>
+                        <ul>
+                            <li>SteamID64 (Collecté mais non affiché)</li>
+                            <li>Pseudonyme Steam</li>
+                            <li>Image de profil Steam</li>
+                        </ul>
+                        <p><em>Ces données proviennent des API Steam et sont déjà rendues publiques par les utilisateurs sur la plateforme Steam.</em></p>
+                    </div>
+                    <div class="rgpd-section anim-fade-up" style="--d: 250ms">
+                        <h3>3. Finalités du traitement</h3>
+                        <p><strong>Les données sont utilisées uniquement pour :</strong></p>
+                        <ul>
+                            <li>Gérer les candidatures au staff du serveur</li>
+                            <li>Afficher les statistiques et classements des joueurs</li>
+                            <li>Assurer le bon fonctionnement et l'animation du serveur</li>
+                        </ul>
+                        <p><em>Aucune exploitation commerciale n'est faite des données.</em></p>
+                    </div>
+                    <div class="rgpd-section anim-fade-up" style="--d: 300ms">
+                        <h3>4. Base légale du traitement</h3>
+                        <p><strong>Les traitements sont fondés sur :</strong></p>
+                        <ul>
+                            <li>Le consentement de l'utilisateur (candidature staff)</li>
+                            <li>L'intérêt légitime du responsable du site (affichage des statistiques du serveur)</li>
+                        </ul>
+                    </div>
+                    <div class="rgpd-section anim-fade-up" style="--d: 350ms">
+                        <h3>5. Durée de conservation</h3>
+                        <ul>
+                            <li>Données de candidature staff : conservées pendant 12 mois maximum</li>
+                            <li>Données du leaderboard : conservées tant que le joueur est actif sur le serveur ou tant que les données sont disponibles via Steam</li>
+                        </ul>
+                    </div>
+                    <div class="rgpd-section anim-fade-up" style="--d: 400ms">
+                        <h3>6. Cookies</h3>
+                        <p>Le site n'utilise pas de cookies publicitaires.</p>
+                        <p>Des cookies techniques ou liés à des services tiers peuvent être déposés afin d'assurer le bon fonctionnement du site.</p>
+                    </div>
+                    <div class="rgpd-section anim-fade-up" style="--d: 450ms">
+                        <h3>7. Partage des données</h3>
+                        <p>Les données personnelles ne sont ni vendues ni cédées.</p>
+                        <p><strong>Elles peuvent être traitées par :</strong></p>
+                        <ul>
+                            <li>Valve Corporation / Steam (données de profil et d'identification des joueurs)</li>
+                        </ul>
+                    </div>
+                    <div class="rgpd-section anim-fade-up" style="--d: 500ms">
+                        <h3>8. Transfert hors Union Européenne</h3>
+                        <p>Certaines données peuvent être traitées hors de l'Union Européenne via les services de Google ou Steam, conformément à leurs propres politiques de confidentialité.</p>
+                    </div>
+                    <div class="rgpd-section anim-fade-up" style="--d: 550ms">
+                        <h3>9. Droits des utilisateurs</h3>
+                        <p><strong>Conformément au RGPD, les utilisateurs disposent des droits suivants :</strong></p>
+                        <ul>
+                            <li>Droit d'accès</li>
+                            <li>Droit de rectification</li>
+                            <li>Droit d'opposition</li>
+                            <li>Droit à l'effacement (dans la limite des obligations légales et techniques)</li>
+                        </ul>
+                        <p><em>Toute demande peut être adressée à : fondationdeltanorp@gmail.com</em></p>
+                    </div>
+                    <div class="rgpd-section anim-fade-up" style="--d: 600ms">
+                        <h3>10. Réclamation</h3>
+                        <p>En cas de litige, l'utilisateur peut déposer une réclamation auprès de l'autorité compétente : <a href="https://www.cnil.fr" target="_blank">CNIL</a></p>
+                    </div>
+                    <div class="rgpd-section anim-fade-up" style="--d: 650ms">
+                        <h3>11. Modification de la politique</h3>
+                        <p>Cette politique de confidentialité peut être modifiée à tout moment. La version en vigueur est celle publiée sur le site.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer anim-footer-up">
+        <div class="footer-container">
+            <div class="footer-left">
+                <div class="footer-logo">
+                    <img src="images/logo (1).svg" alt="logo">
+                    <span>Fondation Delta</span>
+                </div>
+                <p>© 2026 Tous droits réservés.</p>
+            </div>
+
+            <div class="footer-nav">
+                <div class="nav-group">
+                    <h4>Navigation</h4>
+                    <a href="index.html">Accueil</a>
+                    <a href="apropos.html">À Propos</a>
+                    <a href="wiki.html">Wiki</a>
+                </div>
+                <div class="nav-group">
+                    <h4>Classements</h4>
+                    <a href="leaderboard-time.html">Temps de jeu</a>
+                    <a href="leaderboard-kills.html">Meilleurs Kills</a>
+                </div>
+                <div class="nav-group">
+                    <h4>Support</h4>
+                    <a href="contact.html">Contact</a>
+                    <a href="https://discord.gg/bhrFV2v9FF" target="_blank">Discord</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-line"></div>
+            <p>© 2026 Fondation Delta. Développé par Vip3r.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const categoryBtns = document.querySelectorAll('.category-btn');
+            const wikiSections = document.querySelectorAll('.apropos-section');
+
+            categoryBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const category = btn.dataset.category;
+                    
+                    categoryBtns.forEach(b => b.classList.remove('active'));
+                    wikiSections.forEach(s => s.classList.remove('active'));
+                    
+                    btn.classList.add('active');
+                    document.getElementById(category).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
