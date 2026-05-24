@@ -41,32 +41,26 @@ app.get('/api/server-info', async (req, res) => {
 
 app.post('/api/game/stats', async (req, res) => {
     const { steam_id, action } = req.body;
-
-    if (!steam_id || !['kill', 'death'].includes(action)) {
-        return res.status(400).json({ error: "Données invalides" });
-    }
-
+    
     try {
-        let query = "";
-        if (action === 'kill') {
-            query = `
-                INSERT INTO users (steam_id, discord_id, discord_username, kills) 
-                VALUES ($1, $2, 'Joueur En Jeu', 1)
-                ON CONFLICT (steam_id) DO UPDATE SET kills = users.kills + 1;
-            `;
-        } else {
-            query = `
-                INSERT INTO users (steam_id, discord_id, discord_username, deaths) 
-                VALUES ($1, $2, 'Joueur En Jeu', 1)
-                ON CONFLICT (steam_id) DO UPDATE SET deaths = users.deaths + 1;
-            `;
-        }
+        const apiKey = process.env.apiKey;
+        const steamUrl = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${steam_id}`;
+        const steamRes = await fetch(steamUrl);
+        const steamData = await steamRes.json();
+        const avatar = steamData.response.players[0]?.avatarfull || 'images/logo (1).svg';
 
-        await pool.query(query, [steam_id, steam_id]);
-        res.json({ success: true, message: `Statistique ${action} enregistrée.` });
+        const column = action === 'kill' ? 'kills' : 'deaths';
+        const query = `
+            INSERT INTO users (steam_id, discord_id, discord_username, ${column}, steam_avatar) 
+            VALUES ($1, $1, 'Joueur En Jeu', 1, $2)
+            ON CONFLICT (steam_id) 
+            DO UPDATE SET ${column} = users.${column} + 1, steam_avatar = EXCLUDED.steam_avatar;
+        `;
+
+        await pool.query(query, [steam_id, avatar]);
+        res.json({ success: true });
     } catch (error) {
-        console.error("Erreur SQL Stats :", error.message);
-        res.status(500).json({ error: "Erreur lors de la mise à jour des stats" });
+        res.status(500).json({ error: "Erreur serveur" });
     }
 });
 
