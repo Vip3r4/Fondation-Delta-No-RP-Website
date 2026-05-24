@@ -44,9 +44,9 @@ app.post('/api/game/stats', async (req, res) => {
     const STEAM_API_KEY = process.env.apiKey;
 
     try {
-        const response = await fetch(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${STEAM_API_KEY}&steamids=${steam_id}`);
-        const data = await response.json();
-        const playerInfo = data.response.players[0] || {};
+        const steamRes = await fetch(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${STEAM_API_KEY}&steamids=${steam_id}`);
+        const steamData = await steamRes.json();
+        const playerInfo = steamData.response.players[0] || {};
         
         const username = playerInfo.personaname || 'Joueur Inconnu';
         const avatar = playerInfo.avatarfull || 'images/logo (1).svg';
