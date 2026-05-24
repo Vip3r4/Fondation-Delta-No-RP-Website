@@ -60,14 +60,15 @@ function copyIP(ip) {
 async function fetchPlayerCount() {
     try {
         const response = await fetch('https://api.sitedeltadarkrp.fr/api/server-info');
-        
-        if (!response.ok) throw new Error("Erreur réseau");
-        
         const data = await response.json();
         
-        const countElement = document.getElementById('player-count');
-        if (countElement) {
-            countElement.innerText = `${data.players} / ${data.max_players}`;
+        if (data.Servers && data.Servers.length > 0) {
+            const server = data.Servers[0]; 
+            
+            const countElement = document.getElementById('player-count');
+            if (countElement) {
+                countElement.innerText = server.Players;
+            }
         }
     } catch (error) {
         console.error("Erreur de récupération :", error);
