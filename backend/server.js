@@ -12,15 +12,29 @@ app.use(cors({
 }));
 app.use(express.json());
 
+let cache = { data: null, lastUpdated: 0 };
+
 app.get('/api/server-info', async (req, res) => {
+    const now = Date.now();
+    
+    if (cache.data && (now - cache.lastUpdated < 30000)) {
+        return res.json(cache.data);
+    }
+
     try {
         const id = process.env.SCPSL_ID;
         const key = process.env.SCPSL_KEY;
         const response = await fetch(`https://api.scpslgame.com/serverinfo.php?id=${id}&key=${key}&players=true`);
+        
+        if (!response.ok) throw new Error("Erreur API SCP");
+        
         const data = await response.json();
+        
+        cache.data = data;
+        cache.lastUpdated = now;
+        
         res.json(data);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: "Erreur serveur" });
     }
 });

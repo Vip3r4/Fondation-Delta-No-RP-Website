@@ -59,7 +59,7 @@ function copyIP(ip) {
 
 async function fetchPlayerCount() {
     try {
-        const response = await fetch('http://83.150.218.120:5000/api/server-info');
+        const response = await fetch('https://api.sitedeltadarkrp.fr/api/server-info');
         
         if (!response.ok) throw new Error("Erreur réseau");
         
