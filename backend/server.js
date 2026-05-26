@@ -90,41 +90,30 @@ app.post("/api/game/time", async (req, res) => {
   }
 
   try {
-    await pool.query(
-      `
-            INSERT INTO users (steam_id, discord_id, discord_username, play_time) 
-            VALUES ($1, $2, 'Joueur En Jeu', $3)
-            ON CONFLICT (steam_id) DO UPDATE SET play_time = users.play_time + $3;
-        `,
-      [steam_id, steam_id, minutes],
+    const cleanSteamId = String(steam_id).split('@')[0];
+    
+    const existingUser = await pool.query(
+      'SELECT discord_username, steam_avatar FROM users WHERE steam_id = $1',
+      [cleanSteamId]
     );
+    
+    if (existingUser.rows.length > 0) {
+      await pool.query(
+        'UPDATE users SET play_time = COALESCE(play_time, 0) + $1 WHERE steam_id = $2',
+        [minutes, cleanSteamId]
+      );
+    } else {
+      await pool.query(
+        `INSERT INTO users (steam_id, discord_id, discord_username, steam_avatar, play_time) 
+         VALUES ($1, $2, 'Joueur En Jeu', 'images/logo (1).svg', $3)`,
+        [cleanSteamId, cleanSteamId, minutes]
+      );
+    }
 
     res.json({ success: true, message: "Temps de jeu mis à jour." });
   } catch (error) {
     console.error("Erreur SQL Time :", error.message);
     res.status(500).json({ error: "Erreur temps de jeu" });
-  }
-});
-
-app.get("/api/leaderboard/time", async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT 
-        steam_id, 
-        discord_username, 
-        steam_avatar,
-        kills, 
-        deaths, 
-        ROUND(play_time::numeric / 60, 1) as play_time_hours, 
-        ROUND(kills::numeric / GREATEST(deaths, 1), 2) as kda
-      FROM users
-      WHERE steam_id IS NOT NULL AND steam_id <> ''
-      ORDER BY play_time DESC 
-      LIMIT 50;
-    `);
-    res.json(result.rows);
-  } catch (error) {
-    res.status(500).json({ error: "Erreur leaderboard" });
   }
 });
 
@@ -137,16 +126,40 @@ app.get("/api/leaderboard/kills", async (req, res) => {
         steam_avatar,
         kills, 
         deaths, 
-        ROUND(play_time::numeric / 60, 1) as play_time_hours, 
-        ROUND(kills::numeric / GREATEST(deaths, 1), 2) as kda
+        COALESCE(ROUND(play_time::numeric / 60, 1), 0) as play_time_hours, 
+        ROUND(COALESCE(kills, 0)::numeric / GREATEST(COALESCE(deaths, 0), 1), 2) as kda
       FROM users
       WHERE steam_id IS NOT NULL AND steam_id <> ''
-      ORDER BY kills DESC 
+      ORDER BY COALESCE(kills, 0) DESC 
       LIMIT 50;
     `);
     res.json(result.rows);
   } catch (error) {
+    console.error("Erreur leaderboard kills:", error.message);
     res.status(500).json({ error: "Erreur leaderboard kills" });
+  }
+});
+
+app.get("/api/leaderboard/time", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        steam_id, 
+        discord_username, 
+        steam_avatar,
+        kills, 
+        deaths, 
+        COALESCE(ROUND(play_time::numeric / 60, 1), 0) as play_time_hours, 
+        ROUND(COALESCE(kills, 0)::numeric / GREATEST(COALESCE(deaths, 0), 1), 2) as kda
+      FROM users
+      WHERE steam_id IS NOT NULL AND steam_id <> ''
+      ORDER BY COALESCE(play_time, 0) DESC 
+      LIMIT 50;
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Erreur leaderboard time:", error.message);
+    res.status(500).json({ error: "Erreur leaderboard temps" });
   }
 });
 
