@@ -100,7 +100,7 @@
                 </div>
                 <div class="stat-info">
                     <span class="stat-label">Temps Total</span>
-                    <span class="stat-value" id="total-time">--h</span>
+                    <span class="stat-value" id="total-time">--</span>
                 </div>
             </div>
             <div class="stat-card">
@@ -139,7 +139,9 @@
 
                 document.getElementById('top-player').textContent = players[0]?.discord_username || 'Joueur En Jeu';
                 document.getElementById('player-count').textContent = players.length;
-                document.getElementById('total-time').textContent = players.reduce((sum, p) => sum + (parseInt(p.play_time) || 0), 0);
+                
+                const totalHours = players.reduce((sum, p) => sum + (parseFloat(p.play_time_hours) || 0), 0);
+                document.getElementById('total-time').textContent = totalHours + 'h';
 
                 players.forEach((player, index) => {
                     const rank = index + 1;
