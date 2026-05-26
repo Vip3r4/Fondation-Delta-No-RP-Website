@@ -115,18 +115,16 @@ app.get("/api/leaderboard", async (req, res) => {
                 steam_avatar,
                 kills, 
                 deaths, 
-                play_time,
+                ROUND(play_time::numeric / 60, 1) as play_time_hours, 
                 ROUND(kills::numeric / GREATEST(deaths, 1), 2) as kda
             FROM users
             WHERE steam_id IS NOT NULL AND steam_id <> ''
-            ORDER BY kills DESC 
+            ORDER BY play_time DESC 
             LIMIT 50;
         `);
-
     res.json(result.rows);
   } catch (error) {
-    console.error("Erreur SQL Leaderboard :", error.message);
-    res.status(500).json({ error: "Erreur serveur leaderboard" });
+    res.status(500).json({ error: "Erreur leaderboard" });
   }
 });
 

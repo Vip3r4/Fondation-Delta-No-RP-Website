@@ -159,7 +159,7 @@
                         medalEmoji = `#${rank}`;
                     }
                     
-                    const currentTime = parseInt(player.play_time) || 0;
+                    const currentTime = parseFloat(player.play_time_hours) || 0;
                     
                     const cardHTML = `
                         <div class="player-card ${rankClass}">
@@ -176,8 +176,7 @@
 
                             <div class="player-stats">
                                 <div class="stat-item">
-                                    <span class="stat-value">${currentTime}</span>
-                                    <span class="stat-label">h</span>
+                                    <span class="stat-value">${currentTime}h</span>
                                 </div>
                             </div>
                         </div>
