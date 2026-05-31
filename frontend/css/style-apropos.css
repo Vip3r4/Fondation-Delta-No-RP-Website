@@ -787,7 +787,7 @@ body::before {
     border: 1px solid rgba(255, 215, 0, 0.5);
 }
 
-.staff-grade.admin {
+.staff-grade.director {
     background: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(255, 69, 0, 0.2));
     color: #FF4500;
     border: 1px solid rgba(255, 69, 0, 0.5);
