@@ -474,7 +474,7 @@ app.get("/auth/discord/callback", async (req, res) => {
 
     const { id, username, avatar } = userResponse.data;
 
-    let isStaff = false;
+    const isStaff = false;
     try {
       const guildsResponse = await axios.get("https://discord.com/api/users/@me/guilds", {
         headers: { Authorization: `Bearer ${access_token}` }
