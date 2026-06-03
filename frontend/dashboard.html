@@ -155,6 +155,17 @@
     <script>
         const API_URL = "https://api.sitedeltadarkrp.fr";
 
+        // Fonction d'échappement HTML pour prévenir les XSS
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
         const urlParams = new URLSearchParams(window.location.search);
         const urlToken = urlParams.get("token");
 
@@ -223,12 +234,18 @@
         }
 
         function displayProfile(profile) {
+            // Échappement des données utilisateur
+            const steamUsername = escapeHtml(profile.steam_username || 'Joueur');
+            const steamId = escapeHtml(profile.steam_id);
+            const discordUsername = profile.discord_username ? `<div class="user-badge">Discord: ${escapeHtml(profile.discord_username)}</div>` : '';
+            const steamAvatar = profile.steam_avatar || 'images/logo (1).svg';
+            
             document.getElementById("userCard").innerHTML = `
-                <img src="${profile.steam_avatar || 'images/logo (1).svg'}" class="user-avatar" onerror="this.src='images/logo (1).svg'">
+                <img src="${steamAvatar}" class="user-avatar" onerror="this.src='images/logo (1).svg'">
                 <div class="user-info">
-                    <div class="user-name">${profile.steam_username || 'Joueur'}</div>
-                    <div class="user-discord-id">Steam ID: ${profile.steam_id}</div>
-                    ${profile.discord_username ? `<div class="user-badge">Discord: ${profile.discord_username}</div>` : ''}
+                    <div class="user-name">${steamUsername}</div>
+                    <div class="user-discord-id">Steam ID: ${steamId}</div>
+                    ${discordUsername}
                 </div>
             `;
             
@@ -260,12 +277,12 @@
                 </div>
             `;
             
-            document.getElementById("badgeDisplay").innerHTML = profile.current_in_game_badge || 'Aucun badge';
+            document.getElementById("badgeDisplay").innerHTML = escapeHtml(profile.current_in_game_badge) || 'Aucun badge';
             
             const warnsHtml = !profile.warns || profile.warns.length === 0 ? '<div class="empty-state">Aucun warn reçu</div>' : 
                 `<div class="warn-list">${profile.warns.map(w => `
                     <div class="warn-item">
-                        <div><span class="warn-reason">${w.reason}</span><br><span class="warn-moderator">Par: ${w.moderator_name || 'Inconnu'}</span></div>
+                        <div><span class="warn-reason">${escapeHtml(w.reason)}</span><br><span class="warn-moderator">Par: ${escapeHtml(w.moderator_name) || 'Inconnu'}</span></div>
                         <div><span class="warn-date">${new Date(w.created_at).toLocaleDateString()}</span><br><span class="${w.is_active ? 'status-active' : 'status-inactive'}">${w.is_active ? 'ACTIF' : 'INACTIF'}</span></div>
                     </div>
                 `).join('')}</div>`;
@@ -274,7 +291,7 @@
             const bansHtml = !profile.bans || profile.bans.length === 0 ? '<div class="empty-state">Aucun ban</div>' : 
                 `<div class="ban-list">${profile.bans.map(b => `
                     <div class="ban-item">
-                        <div><span class="ban-reason">${b.reason}</span><br><span class="ban-moderator">Par: ${b.moderator_name || 'Inconnu'}</span></div>
+                        <div><span class="ban-reason">${escapeHtml(b.reason)}</span><br><span class="ban-moderator">Par: ${escapeHtml(b.moderator_name) || 'Inconnu'}</span></div>
                         <div><span class="ban-date">${b.expires_at ? `Expire: ${new Date(b.expires_at).toLocaleDateString()}` : 'Permanent'}</span><br><span class="${b.is_active ? 'status-active' : 'status-inactive'}">${b.is_active ? 'ACTIF' : 'INACTIF'}</span></div>
                     </div>
                 `).join('')}</div>`;
@@ -293,10 +310,10 @@
                     <thead><tr><th>Joueur</th><th>Kills</th><th>Playtime</th><th>Actions</th></tr></thead>
                     <tbody>${players.map(p => `
                         <tr class="player-row">
-                            <td><strong>${p.steam_username || p.steam_id}</strong><br><small>${p.steam_id}</small></td>
+                            <td><strong>${escapeHtml(p.steam_username || p.steam_id)}</strong><br><small>${escapeHtml(p.steam_id)}</small></td>
                             <td>${p.kills || 0}</td>
                             <td>${Math.floor((p.play_time || 0) / 60)}h</td>
-                            <td><button class="btn btn-outline" onclick="showSanctionModal('${p.steam_id}', 'warn')">Warn</button> <button class="btn btn-danger" onclick="showSanctionModal('${p.steam_id}', 'ban')">Ban</button></td>
+                            <td><button class="btn btn-outline" onclick="showSanctionModal('${escapeHtml(p.steam_id)}', 'warn')">Warn</button> <button class="btn btn-danger" onclick="showSanctionModal('${escapeHtml(p.steam_id)}', 'ban')">Ban</button></td>
                         </tr>
                     `).join('')}</tbody>
                 </table>

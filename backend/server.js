@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 
 const isStaff = require("./middleware/isStaff");
 const isLinked = require("./middleware/isLinked");
@@ -11,6 +13,20 @@ const pool = require("./config/db");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// ========== SÉCURITÉ ==========
+
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
+            imgSrc: ["'self'", "data:", "https://avatars.steamstatic.com", "https://cdn.discordapp.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+        },
+    },
+}));
+
 app.use(
   cors({
     origin: "https://sitedeltadarkrp.fr",
@@ -19,7 +35,45 @@ app.use(
   })
 );
 
-app.use(express.json());
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: "Trop de requêtes, veuillez réessayer plus tard.",
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+app.use("/api/", globalLimiter);
+
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: "Trop de tentatives, veuillez réessayer dans 15 minutes.",
+});
+
+app.use("/api/link/generate-code", authLimiter);
+app.use("/api/link/verify-code", authLimiter);
+app.use("/api/link/check-status", authLimiter);
+
+function sanitizeString(str) {
+    if (!str || typeof str !== "string") return "";
+    return str.replace(/[<>'"&]/g, (m) => {
+        if (m === "<") return "&lt;";
+        if (m === ">") return "&gt;";
+        if (m === "'") return "&#39;";
+        if (m === '"') return "&quot;";
+        if (m === "&") return "&amp;";
+        return m;
+    });
+}
+
+function validateSteamId(steamId) {
+    if (!steamId || typeof steamId !== "string") return null;
+    const clean = steamId.split("@")[0];
+    if (!/^\d{17}$/.test(clean)) return null;
+    return clean;
+}
+
+app.use(express.json({ limit: "10kb" }));
 
 let cache = { data: null, lastUpdated: 0 };
 
@@ -55,8 +109,14 @@ app.post("/api/game/stats", async (req, res) => {
   const raw_steam_id = req.body.steam_id;
   if (!raw_steam_id) return res.status(400).json({ error: "No ID" });
 
-  const steam_id = raw_steam_id.split("@")[0];
+  const steam_id = validateSteamId(raw_steam_id);
+  if (!steam_id) return res.status(400).json({ error: "Steam ID invalide" });
+
   const { action } = req.body;
+  if (action !== "kill" && action !== "death") {
+    return res.status(400).json({ error: "Action invalide" });
+  }
+
   const STEAM_API_KEY = process.env.apiKey;
 
   try {
@@ -66,7 +126,7 @@ app.post("/api/game/stats", async (req, res) => {
     const steamData = await steamRes.json();
     const playerInfo = steamData.response.players[0] || {};
 
-    const username = playerInfo.personaname || "Joueur Inconnu";
+    const username = sanitizeString(playerInfo.personaname) || "Joueur Inconnu";
     const avatar = playerInfo.avatarfull || "images/logo (1).svg";
 
     const column = action === "kill" ? "kills" : "deaths";
@@ -96,9 +156,15 @@ app.post("/api/game/time", async (req, res) => {
     return res.status(400).json({ error: "Données invalides" });
   }
 
-  try {
-    const cleanSteamId = String(steam_id).split("@")[0];
+  const cleanSteamId = validateSteamId(steam_id);
+  if (!cleanSteamId) return res.status(400).json({ error: "Steam ID invalide" });
 
+  const timeMinutes = parseInt(minutes);
+  if (isNaN(timeMinutes) || timeMinutes <= 0 || timeMinutes > 60) {
+    return res.status(400).json({ error: "Minutes invalides" });
+  }
+
+  try {
     const existingUser = await pool.query(
       "SELECT steam_username FROM users WHERE steam_id = $1",
       [cleanSteamId]
@@ -107,13 +173,13 @@ app.post("/api/game/time", async (req, res) => {
     if (existingUser.rows.length > 0) {
       await pool.query(
         "UPDATE users SET play_time = COALESCE(play_time, 0) + $1 WHERE steam_id = $2",
-        [minutes, cleanSteamId]
+        [timeMinutes, cleanSteamId]
       );
     } else {
       await pool.query(
         `INSERT INTO users (steam_id, steam_username, steam_avatar, play_time) 
          VALUES ($1, 'Joueur En Jeu', 'images/logo (1).svg', $2)`,
-        [cleanSteamId, minutes]
+        [cleanSteamId, timeMinutes]
       );
     }
 
@@ -131,10 +197,15 @@ app.post("/api/game/badge", async (req, res) => {
     return res.status(400).json({ error: "steam_id requis" });
   }
 
+  const cleanSteamId = validateSteamId(steam_id);
+  if (!cleanSteamId) return res.status(400).json({ error: "Steam ID invalide" });
+
+  const cleanBadge = badge ? sanitizeString(badge).substring(0, 50) : null;
+
   try {
     await pool.query(
       "UPDATE users SET current_in_game_badge = $1 WHERE steam_id = $2",
-      [badge || null, steam_id]
+      [cleanBadge, cleanSteamId]
     );
     res.json({ success: true });
   } catch (error) {
@@ -192,7 +263,12 @@ app.get("/api/leaderboard/time", async (req, res) => {
 
 /* ---------------------- PROFIL --------------------- */
 app.get("/api/profile/:steamid", async (req, res) => {
-  const { steamid } = req.params;
+  let { steamid } = req.params;
+
+  const cleanSteamId = validateSteamId(steamid);
+  if (!cleanSteamId) {
+    return res.status(400).json({ error: "Steam ID invalide" });
+  }
 
   try {
     const userResult = await pool.query(
@@ -212,7 +288,7 @@ app.get("/api/profile/:steamid", async (req, res) => {
       FROM users
       WHERE steam_id = $1
     `,
-      [steamid]
+      [cleanSteamId]
     );
 
     if (userResult.rows.length === 0) {
@@ -234,7 +310,7 @@ app.get("/api/profile/:steamid", async (req, res) => {
       WHERE steamid = $1
       ORDER BY created_at DESC
     `,
-      [steamid]
+      [cleanSteamId]
     );
 
     res.json({
@@ -253,11 +329,22 @@ app.get("/api/profile/:steamid", async (req, res) => {
 
 /* ----------------- DISCORD LINK --------------------- */
 app.post("/api/link/generate-code", async (req, res) => {
-  const { discord_id, discord_username } = req.body;
+  let { discord_id, discord_username } = req.body;
 
   if (!discord_id || !discord_username) {
     return res.status(400).json({ error: "Discord ID et username requis" });
   }
+
+  // Validation
+  if (typeof discord_id !== "string" || discord_id.length > 32 || !/^\d+$/.test(discord_id)) {
+    return res.status(400).json({ error: "Discord ID invalide" });
+  }
+
+  if (typeof discord_username !== "string" || discord_username.length > 64) {
+    return res.status(400).json({ error: "Discord username invalide" });
+  }
+
+  discord_username = sanitizeString(discord_username);
 
   try {
     await pool.query(
@@ -286,6 +373,10 @@ app.get("/api/link/check-status", async (req, res) => {
 
   if (!discord_id) {
     return res.status(400).json({ error: "Discord ID requis" });
+  }
+
+  if (typeof discord_id !== "string" || !/^\d+$/.test(discord_id)) {
+    return res.status(400).json({ error: "Discord ID invalide" });
   }
 
   try {
@@ -318,13 +409,18 @@ app.get("/api/link/check-status", async (req, res) => {
 });
 
 app.post("/api/link/verify-code", async (req, res) => {
-  const { code, steam_id } = req.body;
+  let { code, steam_id } = req.body;
 
   if (!code || !steam_id) {
     return res.status(400).json({ error: "Code et SteamID requis" });
   }
 
-  const cleanSteamId = steam_id.split("@")[0];
+  if (typeof code !== "string" || !/^[A-F0-9]{6}$/.test(code)) {
+    return res.status(400).json({ error: "Code invalide" });
+  }
+
+  const cleanSteamId = validateSteamId(steam_id);
+  if (!cleanSteamId) return res.status(400).json({ error: "Steam ID invalide" });
 
   try {
     const codeResult = await pool.query(
@@ -366,14 +462,14 @@ app.post("/api/link/verify-code", async (req, res) => {
         [
           cleanSteamId,
           link.discord_id,
-          link.discord_username,
+          sanitizeString(link.discord_username),
           playerInfo.avatarfull || "",
         ]
       );
     } else {
       await pool.query(
         "UPDATE users SET discord_id = $1, discord_username = $2 WHERE steam_id = $3",
-        [link.discord_id, link.discord_username, cleanSteamId]
+        [link.discord_id, sanitizeString(link.discord_username), cleanSteamId]
       );
     }
 
@@ -400,39 +496,73 @@ app.get("/api/staff/players", auth, isStaff, async (req, res) => {
     `);
     res.json(result.rows);
   } catch (error) {
+    console.error("Erreur staff players:", error.message);
     res.status(500).json({ error: "Erreur" });
   }
 });
 
-app.post("/api/staff/warn", auth, isStaff, async (req, res) => {
-  const { steam_id, reason, duration_minutes } = req.body;
-  const expires_at = duration_minutes ? new Date(Date.now() + duration_minutes * 60000) : null;
+app.post("/api/staff/warn", async (req, res) => {
+  let { steam_id, reason, moderator_name } = req.body;
+
+  const cleanSteamId = validateSteamId(steam_id);
+  if (!cleanSteamId) {
+    return res.status(400).json({ error: "steam_id invalide" });
+  }
+
+  if (!reason || typeof reason !== "string" || reason.length > 500) {
+    return res.status(400).json({ error: "raison invalide (max 500 caractères)" });
+  }
+
+  reason = sanitizeString(reason);
+  moderator_name = moderator_name ? sanitizeString(moderator_name).substring(0, 64) : "Inconnu";
 
   try {
     await pool.query(
-      `INSERT INTO warns_bans (steamid, type, reason, moderator_name, duration_minutes, expires_at)
-       VALUES ($1, 'warn', $2, $3, $4, $5)`,
-      [steam_id, reason, req.user.discord_username, duration_minutes, expires_at]
+      `INSERT INTO warns_bans (steamid, type, reason, moderator_name, is_active)
+       VALUES ($1, 'warn', $2, $3, true)`,
+      [cleanSteamId, reason, moderator_name]
     );
     res.json({ success: true });
   } catch (error) {
-    res.status(500).json({ error: "Erreur" });
+    console.error("Erreur ajout warn:", error.message);
+    res.status(500).json({ error: "Erreur serveur" });
   }
 });
 
 app.post("/api/staff/ban", auth, isStaff, async (req, res) => {
-  const { steam_id, reason, duration_minutes } = req.body;
-  const expires_at = duration_minutes ? new Date(Date.now() + duration_minutes * 60000) : null;
+  let { steam_id, reason, duration_minutes } = req.body;
+
+  const cleanSteamId = validateSteamId(steam_id);
+  if (!cleanSteamId) {
+    return res.status(400).json({ error: "steam_id invalide" });
+  }
+
+  if (!reason || typeof reason !== "string" || reason.length > 500) {
+    return res.status(400).json({ error: "raison invalide (max 500 caractères)" });
+  }
+
+  reason = sanitizeString(reason);
+  
+  let duration = null;
+  if (duration_minutes && !isNaN(parseInt(duration_minutes))) {
+    duration = parseInt(duration_minutes);
+    if (duration <= 0 || duration > 525600) { // max 1 an
+      return res.status(400).json({ error: "durée invalide" });
+    }
+  }
+  
+  const expires_at = duration ? new Date(Date.now() + duration * 60000) : null;
 
   try {
     await pool.query(
       `INSERT INTO warns_bans (steamid, type, reason, moderator_name, duration_minutes, expires_at, is_active)
        VALUES ($1, 'ban', $2, $3, $4, $5, true)`,
-      [steam_id, reason, req.user.discord_username, duration_minutes, expires_at]
+      [cleanSteamId, reason, req.user.discord_username, duration, expires_at]
     );
-    await pool.query("UPDATE users SET is_banned = true WHERE steam_id = $1", [steam_id]);
+    await pool.query("UPDATE users SET is_banned = true WHERE steam_id = $1", [cleanSteamId]);
     res.json({ success: true });
   } catch (error) {
+    console.error("Erreur ajout ban:", error.message);
     res.status(500).json({ error: "Erreur" });
   }
 });
@@ -491,23 +621,9 @@ app.get("/auth/discord/callback", async (req, res) => {
     const { id, username, avatar } = userResponse.data;
 
     const isStaff = false;
-    /*try {
-      const guildsResponse = await axios.get("https://discord.com/api/users/@me/guilds", {
-        headers: { Authorization: `Bearer ${access_token}` }
-      });
-      const guild = guildsResponse.data.find(g => g.id === process.env.DISCORD_GUILD_ID);
-      if (guild) {
-        const memberResponse = await axios.get(`https://discord.com/api/guilds/${process.env.DISCORD_GUILD_ID}/members/${id}`, {
-          headers: { Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}` }
-        });
-        isStaff = memberResponse.data.roles.includes(process.env.DISCORD_STAFF_ROLE_ID);
-      }
-    } catch (err) {
-      console.error("Erreur vérification staff:", err.message);
-    }*/
 
     const token = jwt.sign(
-      { discord_id: id, discord_username: username, avatar: avatar, isStaff: isStaff },
+      { discord_id: id, discord_username: sanitizeString(username), avatar: avatar, isStaff: isStaff },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
@@ -537,6 +653,54 @@ app.get("/api/me", auth, async (req, res) => {
   } catch (error) {
     console.error("Erreur /api/me:", error.message);
     res.status(500).json({ error: "Erreur serveur" });
+  }
+});
+
+/* --------- WARNS -------------- */
+
+app.get("/api/player/warns/:steamid", async (req, res) => {
+  const { steamid } = req.params;
+  
+  const cleanSteamId = validateSteamId(steamid);
+  if (!cleanSteamId) {
+    return res.status(400).json({ error: "Steam ID invalide" });
+  }
+  
+  try {
+    const result = await pool.query(
+      `SELECT id, reason, moderator_name, created_at, is_active 
+       FROM warns_bans 
+       WHERE steamid = $1 AND type = 'warn' 
+       ORDER BY created_at DESC`,
+      [cleanSteamId]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Erreur warns:", error.message);
+    res.status(500).json({ error: "Erreur" });
+  }
+});
+
+app.get("/api/player/bans/:steamid", async (req, res) => {
+  const { steamid } = req.params;
+  
+  const cleanSteamId = validateSteamId(steamid);
+  if (!cleanSteamId) {
+    return res.status(400).json({ error: "Steam ID invalide" });
+  }
+  
+  try {
+    const result = await pool.query(
+      `SELECT id, reason, moderator_name, created_at, expires_at, is_active 
+       FROM warns_bans 
+       WHERE steamid = $1 AND type = 'ban' 
+       ORDER BY created_at DESC`,
+      [cleanSteamId]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Erreur bans:", error.message);
+    res.status(500).json({ error: "Erreur" });
   }
 });
 
