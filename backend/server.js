@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000;
 app.use(
   cors({
     origin: "https://sitedeltadarkrp.fr",
-    methods: ["GET", "POST", "PATCH", "DELETE"],
+    methods: ["GET", "POST"],
     credentials: true,
   })
 );

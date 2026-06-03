@@ -75,7 +75,7 @@
     <div class="dashboard-container">
         <div class="dashboard-header">
             <h1>Lier ton compte Steam</h1>
-            <p>Génère un code et entre-le dans le jeu avec la commande /link</p>
+            <p>Génère un code et entre-le dans le jeu avec la commande .link</p>
         </div>
 
         <div class="section" id="linkSection">
@@ -132,7 +132,7 @@
                 document.getElementById("linkSection").style.display = "none";
                 document.getElementById("codeSection").style.display = "block";
                 document.getElementById("code").innerText = data.code;
-                document.getElementById("cmd").innerText = `/link ${data.code}`;
+                document.getElementById("cmd").innerText = `.link ${data.code}`;
                 startPolling(user.discord_id);
                 startTimer(new Date(data.expires_at));
             } else {
