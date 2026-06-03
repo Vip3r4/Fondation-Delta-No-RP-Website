@@ -5,6 +5,7 @@ const crypto = require("crypto");
 
 const isStaff = require("./middleware/isStaff");
 const isLinked = require("./middleware/isLinked");
+const auth = require("./middleware/auth");
 const pool = require("./config/db");
 
 const app = express();
@@ -433,6 +434,92 @@ app.post("/api/staff/ban", auth, isStaff, async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: "Erreur" });
+  }
+});
+
+/* ----------------- DISCORD OAUTH ----------------- */
+const axios = require("axios");
+const jwt = require("jsonwebtoken");
+
+app.get("/auth/discord", (req, res) => {
+  const url = `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&redirect_uri=${process.env.DISCORD_REDIRECT_URI}&response_type=code&scope=identify`;
+  res.redirect(url);
+});
+
+app.get("/auth/discord/callback", async (req, res) => {
+  const { code } = req.query;
+
+  if (!code) {
+    return res.status(400).send("Code manquant");
+  }
+
+  try {
+    const tokenResponse = await axios.post("https://discord.com/api/oauth2/token", 
+      new URLSearchParams({
+        client_id: process.env.DISCORD_CLIENT_ID,
+        client_secret: process.env.DISCORD_CLIENT_SECRET,
+        grant_type: "authorization_code",
+        code: code,
+        redirect_uri: process.env.DISCORD_REDIRECT_URI,
+      }), {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
+      }
+    );
+
+    const { access_token } = tokenResponse.data;
+
+    const userResponse = await axios.get("https://discord.com/api/users/@me", {
+      headers: { Authorization: `Bearer ${access_token}` }
+    });
+
+    const { id, username, avatar } = userResponse.data;
+
+    let isStaff = false;
+    try {
+      const guildsResponse = await axios.get("https://discord.com/api/users/@me/guilds", {
+        headers: { Authorization: `Bearer ${access_token}` }
+      });
+      const guild = guildsResponse.data.find(g => g.id === process.env.DISCORD_GUILD_ID);
+      if (guild) {
+        const memberResponse = await axios.get(`https://discord.com/api/guilds/${process.env.DISCORD_GUILD_ID}/members/${id}`, {
+          headers: { Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}` }
+        });
+        isStaff = memberResponse.data.roles.includes(process.env.DISCORD_STAFF_ROLE_ID);
+      }
+    } catch (err) {
+      console.error("Erreur vérification staff:", err.message);
+    }
+
+    const token = jwt.sign(
+      { discord_id: id, discord_username: username, avatar: avatar, isStaff: isStaff },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.redirect(`https://sitedeltadarkrp.fr/dashboard.html?token=${token}`);
+  } catch (error) {
+    console.error("Erreur OAuth:", error.message);
+    res.status(500).send("Erreur lors de l'authentification");
+  }
+});
+
+app.get("/api/me", auth, async (req, res) => {
+  try {
+    const user = await pool.query(
+      "SELECT steam_id FROM users WHERE discord_id = $1",
+      [req.user.discord_id]
+    );
+    
+    res.json({
+      discord_id: req.user.discord_id,
+      discord_username: req.user.discord_username,
+      avatar: req.user.avatar,
+      isStaff: req.user.isStaff || false,
+      steam_id: user.rows[0]?.steam_id || null
+    });
+  } catch (error) {
+    console.error("Erreur /api/me:", error.message);
+    res.status(500).json({ error: "Erreur serveur" });
   }
 });
 
