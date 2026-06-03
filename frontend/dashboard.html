@@ -19,55 +19,20 @@
             </div>
         </a>
         <ul>
-            <li>
-                <a href="index.html" class="active">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                    Accueil
-                </a>
-            </li>
-            <li>
-                <a href="wiki.html">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                    Wiki
-                </a>
-            </li>
+            <li><a href="index.html">Accueil</a></li>
+            <li><a href="wiki.html">Wiki</a></li>
             <li class="nav-dropdown">
-                <a href="javascript:void(0)" class="dropbtn filter-btn" onclick="toggleDropdown()">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
-                    Classements 
-                    <svg class="arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 9L12 15L18 9"/>
-                    </svg>
-                </a>
+                <a href="javascript:void(0)" class="dropbtn" onclick="toggleDropdown()">Classements <svg class="arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9L12 15L18 9"/></svg></a>
                 <div id="filterMenu" class="filter-content">
-                    <a href="leaderboard-time.html">
-                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                        Temps de jeu
-                    </a>
-                    <a href="leaderboard-kills.html">
-                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path><path d="M13 19l6-6"></path><path d="M16 16l4 4"></path><path d="M19 13l3 3"></path></svg>
-                        Kills
-                    </a>
+                    <a href="leaderboard-time.html">Temps de jeu</a>
+                    <a href="leaderboard-kills.html">Kills</a>
                 </div>
             </li>
-            <li>
-                <a href="apropos.html">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                    À Propos
-                </a>
-            </li>
-            <li>
-                <a href="contact.html">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                    Contact
-                </a>
-            </li>
+            <li><a href="apropos.html">À Propos</a></li>
+            <li><a href="contact.html">Contact</a></li>
         </ul>
         <div class="navbar-right">
-            <a class="navbar-cta" href="login.html">
-                <svg class="nav-icon-cta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                Connexion
-            </a>
+            <a class="navbar-cta" href="#" id="logoutBtn">Déconnexion</a>
         </div>
     </nav>
 
@@ -91,19 +56,15 @@
 
         <div id="linkedSection" style="display: none;">
             <div class="user-card" id="userCard"></div>
-
             <div class="stats-grid" id="statsGrid"></div>
-
             <div class="section">
                 <h3 class="section-title">🏅 Badge en jeu</h3>
                 <p id="badgeDisplay" style="font-size: 1.2rem; color: var(--accent);">--</p>
             </div>
-
             <div class="section">
                 <h3 class="section-title">⚠️ Warns reçus</h3>
                 <div id="warnsList"></div>
             </div>
-
             <div class="section">
                 <h3 class="section-title">🔨 Bans</h3>
                 <div id="bansList"></div>
@@ -142,6 +103,15 @@
 
     <script>
         const API_URL = "https://api.sitedeltadarkrp.fr";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get("token");
+
+        if (urlToken) {
+            localStorage.setItem("token", urlToken);
+            window.history.replaceState({}, document.title, "/dashboard.html");
+        }
+
         const token = localStorage.getItem("token");
         let currentUser = null;
         let currentModalType = null;
@@ -152,19 +122,33 @@
         }
 
         async function fetchApi(endpoint, options = {}) {
-            const response = await fetch(`${API_URL}${endpoint}`, {
-                ...options,
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                    ...options.headers
+            try {
+                const response = await fetch(`${API_URL}${endpoint}`, {
+                    ...options,
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                        ...options.headers
+                    }
+                });
+                
+                if (response.status === 401) {
+                    localStorage.removeItem("token");
+                    window.location.href = "/login.html";
+                    return null;
                 }
-            });
-            return response.json();
+                
+                return response.json();
+            } catch (error) {
+                console.error("API Error:", error);
+                return null;
+            }
         }
 
         async function loadUser() {
             const user = await fetchApi("/api/me");
+            if (!user) return;
+            
             currentUser = user;
             
             if (!user.steam_id) {
@@ -177,7 +161,9 @@
             document.getElementById("linkedSection").style.display = "block";
             
             const profile = await fetchApi(`/api/profile/${user.steam_id}`);
-            displayProfile(profile.profile);
+            if (profile && profile.profile) {
+                displayProfile(profile.profile);
+            }
             
             if (user.isStaff) {
                 document.getElementById("staffPanel").classList.add("visible");
@@ -187,9 +173,9 @@
 
         function displayProfile(profile) {
             document.getElementById("userCard").innerHTML = `
-                <img src="${profile.steam_avatar}" class="user-avatar" onerror="this.src='images/logo (1).svg'">
+                <img src="${profile.steam_avatar || 'images/logo (1).svg'}" class="user-avatar" onerror="this.src='images/logo (1).svg'">
                 <div class="user-info">
-                    <div class="user-name">${profile.steam_username}</div>
+                    <div class="user-name">${profile.steam_username || 'Joueur'}</div>
                     <div class="user-discord-id">Steam ID: ${profile.steam_id}</div>
                     ${profile.discord_username ? `<div class="user-badge">Discord: ${profile.discord_username}</div>` : ''}
                 </div>
@@ -204,7 +190,7 @@
             
             document.getElementById("badgeDisplay").innerHTML = profile.current_in_game_badge || 'Aucun badge';
             
-            const warnsHtml = profile.warns.length === 0 ? '<div class="empty-state">Aucun warn reçu</div>' : 
+            const warnsHtml = !profile.warns || profile.warns.length === 0 ? '<div class="empty-state">Aucun warn reçu</div>' : 
                 `<div class="warn-list">${profile.warns.map(w => `
                     <div class="warn-item">
                         <div><span class="warn-reason">${w.reason}</span><br><span class="warn-moderator">Par: ${w.moderator_name || 'Inconnu'}</span></div>
@@ -213,7 +199,7 @@
                 `).join('')}</div>`;
             document.getElementById("warnsList").innerHTML = warnsHtml;
             
-            const bansHtml = profile.bans.length === 0 ? '<div class="empty-state">Aucun ban</div>' : 
+            const bansHtml = !profile.bans || profile.bans.length === 0 ? '<div class="empty-state">Aucun ban</div>' : 
                 `<div class="ban-list">${profile.bans.map(b => `
                     <div class="ban-item">
                         <div><span class="ban-reason">${b.reason}</span><br><span class="ban-moderator">Par: ${b.moderator_name || 'Inconnu'}</span></div>
@@ -225,19 +211,19 @@
 
         async function loadAllPlayers() {
             const players = await fetchApi("/api/staff/players");
-            const tbody = document.getElementById("playersList");
-            if (!players.length) {
-                tbody.innerHTML = '<div class="empty-state">Aucun joueur trouvé</div>';
+            const container = document.getElementById("playersList");
+            if (!players || !players.length) {
+                container.innerHTML = '<div class="empty-state">Aucun joueur trouvé</div>';
                 return;
             }
-            tbody.innerHTML = `
+            container.innerHTML = `
                 <table class="player-table">
                     <thead><tr><th>Joueur</th><th>Kills</th><th>Playtime</th><th>Actions</th></tr></thead>
                     <tbody>${players.map(p => `
                         <tr class="player-row">
                             <td><strong>${p.steam_username || p.steam_id}</strong><br><small>${p.steam_id}</small></td>
                             <td>${p.kills || 0}</td>
-                            <td>${Math.floor(p.play_time / 60)}h</td>
+                            <td>${Math.floor((p.play_time || 0) / 60)}h</td>
                             <td><button class="btn btn-outline" onclick="showSanctionModal('${p.steam_id}', 'warn')">Warn</button> <button class="btn btn-danger" onclick="showSanctionModal('${p.steam_id}', 'ban')">Ban</button></td>
                         </tr>
                     `).join('')}</tbody>
@@ -274,7 +260,7 @@
             
             document.getElementById("modal").classList.remove("active");
             loadAllPlayers();
-            if (currentUser.steam_id === currentModalTarget) {
+            if (currentUser && currentUser.steam_id === currentModalTarget) {
                 loadUser();
             }
         };
@@ -287,9 +273,6 @@
             localStorage.removeItem("token");
             window.location.href = "/login.html";
         };
-
-        document.getElementById("searchPlayer")?.addEventListener("input", (e) => {
-        });
 
         function toggleDropdown() {
             const menu = document.getElementById('filterMenu');

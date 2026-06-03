@@ -447,13 +447,27 @@ app.get("/auth/discord", (req, res) => {
 });
 
 app.get("/auth/discord/callback", async (req, res) => {
-  const { code } = req.query;
+  const { code, error } = req.query;
+  
+  console.log("=== CALLBACK REÇU ===");
+  console.log("Code:", code);
+  console.log("Error:", error);
+
+  if (error) {
+    console.log("Erreur Discord:", error);
+    return res.status(400).send(`Erreur Discord: ${error}`);
+  }
 
   if (!code) {
+    console.log("Pas de code");
     return res.status(400).send("Code manquant");
   }
 
   try {
+    console.log("Envoi requête à Discord...");
+    console.log("Client ID:", process.env.DISCORD_CLIENT_ID);
+    console.log("Redirect URI:", process.env.DISCORD_REDIRECT_URI);
+    
     const tokenResponse = await axios.post("https://discord.com/api/oauth2/token", 
       new URLSearchParams({
         client_id: process.env.DISCORD_CLIENT_ID,
@@ -466,6 +480,8 @@ app.get("/auth/discord/callback", async (req, res) => {
       }
     );
 
+    console.log("Token reçu !");
+
     const { access_token } = tokenResponse.data;
 
     const userResponse = await axios.get("https://discord.com/api/users/@me", {
@@ -475,7 +491,7 @@ app.get("/auth/discord/callback", async (req, res) => {
     const { id, username, avatar } = userResponse.data;
 
     const isStaff = false;
-    try {
+    /*try {
       const guildsResponse = await axios.get("https://discord.com/api/users/@me/guilds", {
         headers: { Authorization: `Bearer ${access_token}` }
       });
@@ -488,14 +504,15 @@ app.get("/auth/discord/callback", async (req, res) => {
       }
     } catch (err) {
       console.error("Erreur vérification staff:", err.message);
-    }
+    }*/
 
     const token = jwt.sign(
       { discord_id: id, discord_username: username, avatar: avatar, isStaff: isStaff },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
-
+    
+    console.log("Token généré, redirection vers dashboard...");
     res.redirect(`https://sitedeltadarkrp.fr/dashboard.html?token=${token}`);
   } catch (error) {
     console.error("Erreur OAuth:", error.message);
