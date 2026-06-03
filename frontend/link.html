@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fondation Delta - Liaison</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="icon" href="images/logo (1).svg">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo-container">
+            <div class="navbar-logo">
+                <img src="images/logo (1).svg" alt="logo">
+                <div>
+                    <h2>Fondation Delta NoRP</h2>
+                    <span>Serveur SCP:SL Français</span>
+                </div>
+            </div>
+        </a>
+        <ul>
+            <li>
+                <a href="index.html" class="active">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    Accueil
+                </a>
+            </li>
+            <li>
+                <a href="wiki.html">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    Wiki
+                </a>
+            </li>
+            <li class="nav-dropdown">
+                <a href="javascript:void(0)" class="dropbtn filter-btn" onclick="toggleDropdown()">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+                    Classements 
+                    <svg class="arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9L12 15L18 9"/>
+                    </svg>
+                </a>
+                <div id="filterMenu" class="filter-content">
+                    <a href="leaderboard-time.html">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        Temps de jeu
+                    </a>
+                    <a href="leaderboard-kills.html">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path><path d="M13 19l6-6"></path><path d="M16 16l4 4"></path><path d="M19 13l3 3"></path></svg>
+                        Kills
+                    </a>
+                </div>
+            </li>
+            <li>
+                <a href="apropos.html">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    À Propos
+                </a>
+            </li>
+            <li>
+                <a href="contact.html">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    Contact
+                </a>
+            </li>
+        </ul>
+        <div class="navbar-right">
+            <a class="navbar-cta" href="dashboard.html">Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="grid-bg"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Lier ton compte Steam</h1>
+            <p>Génère un code et entre-le dans le jeu avec la commande /link</p>
+        </div>
+
+        <div class="section" id="linkSection">
+            <div style="text-align: center; padding: 20px;">
+                <button class="btn btn-primary" id="generateBtn">Générer un code</button>
+            </div>
+        </div>
+
+        <div class="section" id="codeSection" style="display: none;">
+            <div style="text-align: center;">
+                <h3>Ton code</h3>
+                <div class="link-code" id="code"></div>
+                <p class="link-timer">Expire dans <span id="timer">10:00</span></p>
+                <p>Dans le jeu, tape : <strong id="cmd"></strong></p>
+                <div id="status" style="margin-top: 20px; color: var(--accent);">En attente de liaison...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://api.sitedeltadarkrp.fr";
+        const token = localStorage.getItem("token");
+        
+        if (!token) {
+            window.location.href = "/login.html";
+        }
+
+        let pollingInterval = null;
+        let timerInterval = null;
+
+        document.getElementById("generateBtn").onclick = generateCode;
+
+        async function getUserInfo() {
+            const response = await fetch(`${API_URL}/api/me`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            return response.json();
+        }
+
+        async function generateCode() {
+            const user = await getUserInfo();
+            
+            const response = await fetch(`${API_URL}/api/link/generate-code`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    discord_id: user.discord_id, 
+                    discord_username: user.discord_username 
+                })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById("linkSection").style.display = "none";
+                document.getElementById("codeSection").style.display = "block";
+                document.getElementById("code").innerText = data.code;
+                document.getElementById("cmd").innerText = `/link ${data.code}`;
+                startPolling(user.discord_id);
+                startTimer(new Date(data.expires_at));
+            } else {
+                alert("Erreur : " + data.error);
+            }
+        }
+
+        async function startPolling(discordId) {
+            if (pollingInterval) clearInterval(pollingInterval);
+            
+            pollingInterval = setInterval(async () => {
+                const response = await fetch(`${API_URL}/api/link/check-status?discord_id=${discordId}`);
+                const data = await response.json();
+                
+                if (data.linked) {
+                    clearInterval(pollingInterval);
+                    clearInterval(timerInterval);
+                    document.getElementById("status").innerHTML = "✅ Compte lié avec succès ! Redirection...";
+                    setTimeout(() => {
+                        window.location.href = "/dashboard.html";
+                    }, 2000);
+                }
+            }, 3000);
+        }
+
+        function startTimer(expiresAt) {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                const diff = new Date(expiresAt) - new Date();
+                if (diff <= 0) {
+                    clearInterval(timerInterval);
+                    clearInterval(pollingInterval);
+                    document.getElementById("timer").innerText = "00:00";
+                    document.getElementById("status").innerHTML = "❌ Code expiré, génère un nouveau code.";
+                } else {
+                    const minutes = Math.floor(diff / 60000);
+                    const seconds = Math.floor((diff % 60000) / 1000);
+                    document.getElementById("timer").innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function toggleDropdown() {
+            const menu = document.getElementById('filterMenu');
+            if (menu) menu.classList.toggle('show');
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            document.body.style.setProperty('--mouse-x', e.clientX + 'px');
+            document.body.style.setProperty('--mouse-y', e.clientY + 'px');
+        });
+    </script>
+</body>
+</html>

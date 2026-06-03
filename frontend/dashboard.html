@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fondation Delta - Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="icon" href="images/logo (1).svg">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo-container">
+            <div class="navbar-logo">
+                <img src="images/logo (1).svg" alt="logo">
+                <div>
+                    <h2>Fondation Delta NoRP</h2>
+                    <span>Serveur SCP:SL Français</span>
+                </div>
+            </div>
+        </a>
+        <ul>
+            <li>
+                <a href="index.html" class="active">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    Accueil
+                </a>
+            </li>
+            <li>
+                <a href="wiki.html">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    Wiki
+                </a>
+            </li>
+            <li class="nav-dropdown">
+                <a href="javascript:void(0)" class="dropbtn filter-btn" onclick="toggleDropdown()">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+                    Classements 
+                    <svg class="arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9L12 15L18 9"/>
+                    </svg>
+                </a>
+                <div id="filterMenu" class="filter-content">
+                    <a href="leaderboard-time.html">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        Temps de jeu
+                    </a>
+                    <a href="leaderboard-kills.html">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path><path d="M13 19l6-6"></path><path d="M16 16l4 4"></path><path d="M19 13l3 3"></path></svg>
+                        Kills
+                    </a>
+                </div>
+            </li>
+            <li>
+                <a href="apropos.html">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    À Propos
+                </a>
+            </li>
+            <li>
+                <a href="contact.html">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    Contact
+                </a>
+            </li>
+        </ul>
+        <div class="navbar-right">
+            <a class="navbar-cta" href="login.html">
+                <svg class="nav-icon-cta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                Connexion
+            </a>
+        </div>
+    </nav>
+
+    <div class="grid-bg"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>📊 Mon Profil</h1>
+            <p>Bienvenue sur ton espace personnel</p>
+        </div>
+
+        <div id="unlinkedSection" style="display: none;">
+            <div class="section" style="text-align: center;">
+                <h2>⚠️ Compte non lié</h2>
+                <p>Tu n'as pas encore lié ton compte Steam à ton compte Discord.</p>
+                <button class="btn btn-primary" onclick="window.location.href='/link.html'">🔗 Lier mon compte Steam</button>
+            </div>
+        </div>
+
+        <div id="linkedSection" style="display: none;">
+            <div class="user-card" id="userCard"></div>
+
+            <div class="stats-grid" id="statsGrid"></div>
+
+            <div class="section">
+                <h3 class="section-title">🏅 Badge en jeu</h3>
+                <p id="badgeDisplay" style="font-size: 1.2rem; color: var(--accent);">--</p>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">⚠️ Warns reçus</h3>
+                <div id="warnsList"></div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">🔨 Bans</h3>
+                <div id="bansList"></div>
+            </div>
+        </div>
+
+        <div id="staffPanel" class="staff-panel">
+            <div class="section">
+                <div class="staff-header">
+                    <h3 class="section-title">👑 Panel Staff</h3>
+                    <input type="text" id="searchPlayer" class="staff-search" placeholder="Rechercher un joueur...">
+                </div>
+                <div id="playersList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Ajouter une sanction</h3>
+            <input type="hidden" id="modalSteamId">
+            <input type="text" id="modalReason" placeholder="Raison">
+            <select id="modalDuration">
+                <option value="null">Permanent</option>
+                <option value="60">1 heure</option>
+                <option value="1440">24 heures</option>
+                <option value="10080">7 jours</option>
+                <option value="43200">30 jours</option>
+            </select>
+            <div class="modal-buttons">
+                <button class="btn btn-outline" id="modalCancel">Annuler</button>
+                <button class="btn btn-primary" id="modalConfirm">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://api.sitedeltadarkrp.fr";
+        const token = localStorage.getItem("token");
+        let currentUser = null;
+        let currentModalType = null;
+        let currentModalTarget = null;
+
+        if (!token) {
+            window.location.href = "/login.html";
+        }
+
+        async function fetchApi(endpoint, options = {}) {
+            const response = await fetch(`${API_URL}${endpoint}`, {
+                ...options,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                    ...options.headers
+                }
+            });
+            return response.json();
+        }
+
+        async function loadUser() {
+            const user = await fetchApi("/api/me");
+            currentUser = user;
+            
+            if (!user.steam_id) {
+                document.getElementById("unlinkedSection").style.display = "block";
+                document.getElementById("linkedSection").style.display = "none";
+                return;
+            }
+            
+            document.getElementById("unlinkedSection").style.display = "none";
+            document.getElementById("linkedSection").style.display = "block";
+            
+            const profile = await fetchApi(`/api/profile/${user.steam_id}`);
+            displayProfile(profile.profile);
+            
+            if (user.isStaff) {
+                document.getElementById("staffPanel").classList.add("visible");
+                loadAllPlayers();
+            }
+        }
+
+        function displayProfile(profile) {
+            document.getElementById("userCard").innerHTML = `
+                <img src="${profile.steam_avatar}" class="user-avatar" onerror="this.src='images/logo (1).svg'">
+                <div class="user-info">
+                    <div class="user-name">${profile.steam_username}</div>
+                    <div class="user-discord-id">Steam ID: ${profile.steam_id}</div>
+                    ${profile.discord_username ? `<div class="user-badge">Discord: ${profile.discord_username}</div>` : ''}
+                </div>
+            `;
+            
+            document.getElementById("statsGrid").innerHTML = `
+                <div class="stat-card"><div class="stat-icon">💀</div><div class="stat-value">${profile.kills || 0}</div><div class="stat-label">Kills</div></div>
+                <div class="stat-card"><div class="stat-icon">⚰️</div><div class="stat-value">${profile.deaths || 0}</div><div class="stat-label">Deaths</div></div>
+                <div class="stat-card"><div class="stat-icon">📊</div><div class="stat-value">${profile.kda || 0}</div><div class="stat-label">KDA</div></div>
+                <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-value">${profile.play_time_hours || 0}h</div><div class="stat-label">Temps de jeu</div></div>
+            `;
+            
+            document.getElementById("badgeDisplay").innerHTML = profile.current_in_game_badge || 'Aucun badge';
+            
+            const warnsHtml = profile.warns.length === 0 ? '<div class="empty-state">Aucun warn reçu</div>' : 
+                `<div class="warn-list">${profile.warns.map(w => `
+                    <div class="warn-item">
+                        <div><span class="warn-reason">${w.reason}</span><br><span class="warn-moderator">Par: ${w.moderator_name || 'Inconnu'}</span></div>
+                        <div><span class="warn-date">${new Date(w.created_at).toLocaleDateString()}</span><br><span class="${w.is_active ? 'status-active' : 'status-inactive'}">${w.is_active ? 'ACTIF' : 'INACTIF'}</span></div>
+                    </div>
+                `).join('')}</div>`;
+            document.getElementById("warnsList").innerHTML = warnsHtml;
+            
+            const bansHtml = profile.bans.length === 0 ? '<div class="empty-state">Aucun ban</div>' : 
+                `<div class="ban-list">${profile.bans.map(b => `
+                    <div class="ban-item">
+                        <div><span class="ban-reason">${b.reason}</span><br><span class="ban-moderator">Par: ${b.moderator_name || 'Inconnu'}</span></div>
+                        <div><span class="ban-date">${b.expires_at ? `Expire: ${new Date(b.expires_at).toLocaleDateString()}` : 'Permanent'}</span><br><span class="${b.is_active ? 'status-active' : 'status-inactive'}">${b.is_active ? 'ACTIF' : 'INACTIF'}</span></div>
+                    </div>
+                `).join('')}</div>`;
+            document.getElementById("bansList").innerHTML = bansHtml;
+        }
+
+        async function loadAllPlayers() {
+            const players = await fetchApi("/api/staff/players");
+            const tbody = document.getElementById("playersList");
+            if (!players.length) {
+                tbody.innerHTML = '<div class="empty-state">Aucun joueur trouvé</div>';
+                return;
+            }
+            tbody.innerHTML = `
+                <table class="player-table">
+                    <thead><tr><th>Joueur</th><th>Kills</th><th>Playtime</th><th>Actions</th></tr></thead>
+                    <tbody>${players.map(p => `
+                        <tr class="player-row">
+                            <td><strong>${p.steam_username || p.steam_id}</strong><br><small>${p.steam_id}</small></td>
+                            <td>${p.kills || 0}</td>
+                            <td>${Math.floor(p.play_time / 60)}h</td>
+                            <td><button class="btn btn-outline" onclick="showSanctionModal('${p.steam_id}', 'warn')">Warn</button> <button class="btn btn-danger" onclick="showSanctionModal('${p.steam_id}', 'ban')">Ban</button></td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table>
+            `;
+        }
+
+        function showSanctionModal(steamId, type) {
+            currentModalType = type;
+            currentModalTarget = steamId;
+            document.getElementById("modalTitle").innerText = type === 'warn' ? 'Ajouter un warn' : 'Bannir le joueur';
+            document.getElementById("modalSteamId").value = steamId;
+            document.getElementById("modalReason").value = '';
+            document.getElementById("modal").classList.add("active");
+        }
+
+        document.getElementById("modalConfirm").onclick = async () => {
+            const reason = document.getElementById("modalReason").value;
+            const duration = document.getElementById("modalDuration").value;
+            if (!reason) {
+                alert("Veuillez entrer une raison");
+                return;
+            }
+            
+            const endpoint = currentModalType === 'warn' ? '/api/staff/warn' : '/api/staff/ban';
+            await fetchApi(endpoint, {
+                method: "POST",
+                body: JSON.stringify({
+                    steam_id: currentModalTarget,
+                    reason: reason,
+                    duration_minutes: duration === 'null' ? null : parseInt(duration)
+                })
+            });
+            
+            document.getElementById("modal").classList.remove("active");
+            loadAllPlayers();
+            if (currentUser.steam_id === currentModalTarget) {
+                loadUser();
+            }
+        };
+        
+        document.getElementById("modalCancel").onclick = () => {
+            document.getElementById("modal").classList.remove("active");
+        };
+
+        document.getElementById("logoutBtn").onclick = () => {
+            localStorage.removeItem("token");
+            window.location.href = "/login.html";
+        };
+
+        document.getElementById("searchPlayer")?.addEventListener("input", (e) => {
+        });
+
+        function toggleDropdown() {
+            const menu = document.getElementById('filterMenu');
+            if (menu) menu.classList.toggle('show');
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            document.body.style.setProperty('--mouse-x', e.clientX + 'px');
+            document.body.style.setProperty('--mouse-y', e.clientY + 'px');
+        });
+
+        loadUser();
+    </script>
+</body>
+</html>

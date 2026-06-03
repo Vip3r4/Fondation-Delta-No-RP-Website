@@ -388,12 +388,56 @@ app.post("/api/link/verify-code", async (req, res) => {
   }
 });
 
-/* ----------------- STAFF ROUTES --------------------- */
-app.get("/api/test-staff", isStaff, (req, res) => {
-  res.json({ success: true, message: "Tu es staff" });
+/* ----------------- STAFF ROUTES ----------------- */
+app.get("/api/staff/players", auth, isStaff, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT steam_id, steam_username, kills, deaths, play_time
+      FROM users
+      WHERE steam_id IS NOT NULL AND steam_id <> ''
+      ORDER BY steam_username
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: "Erreur" });
+  }
+});
+
+app.post("/api/staff/warn", auth, isStaff, async (req, res) => {
+  const { steam_id, reason, duration_minutes } = req.body;
+  const expires_at = duration_minutes ? new Date(Date.now() + duration_minutes * 60000) : null;
+
+  try {
+    await pool.query(
+      `INSERT INTO warns_bans (steamid, type, reason, moderator_name, duration_minutes, expires_at)
+       VALUES ($1, 'warn', $2, $3, $4, $5)`,
+      [steam_id, reason, req.user.discord_username, duration_minutes, expires_at]
+    );
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: "Erreur" });
+  }
+});
+
+app.post("/api/staff/ban", auth, isStaff, async (req, res) => {
+  const { steam_id, reason, duration_minutes } = req.body;
+  const expires_at = duration_minutes ? new Date(Date.now() + duration_minutes * 60000) : null;
+
+  try {
+    await pool.query(
+      `INSERT INTO warns_bans (steamid, type, reason, moderator_name, duration_minutes, expires_at, is_active)
+       VALUES ($1, 'ban', $2, $3, $4, $5, true)`,
+      [steam_id, reason, req.user.discord_username, duration_minutes, expires_at]
+    );
+    await pool.query("UPDATE users SET is_banned = true WHERE steam_id = $1", [steam_id]);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: "Erreur" });
+  }
 });
 
 /* ----------------- APP LISTEN --------------------- */
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Serveur lancé sur : http://0.0.0.0:${PORT}`);
 });

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fondation Delta - Connexion</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="icon" href="images/logo (1).svg">
+    <style>
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 5;
+        }
+        .login-card {
+            background: linear-gradient(135deg, rgba(242, 154, 74, 0.1), rgba(13, 16, 21, 0.95));
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 50px;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            backdrop-filter: blur(15px);
+        }
+        .login-logo {
+            width: 80px;
+            margin-bottom: 25px;
+        }
+        .login-title {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFF 30%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        .discord-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #5865F2;
+            color: white;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 25px;
+            transition: all 0.3s ease;
+        }
+        .discord-btn:hover {
+            background: #4752c4;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(88, 101, 242, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            <img src="images/logo (1).svg" alt="Logo" class="login-logo">
+            <h1 class="login-title">Fondation Delta</h1>
+            <p style="color: var(--text-muted);">Connecte-toi avec Discord pour accéder à ton profil</p>
+            <a href="https://api.sitedeltadarkrp.fr/auth/discord" class="discord-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0c-.164-.386-.398-.875-.608-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106c-.786-.298-1.539-.689-2.244-1.154a.076.076 0 0 1-.011-.114c.15-.163.302-.314.463-.462a.074.074 0 0 1 .082-.009c1.854.849 3.859 1.287 5.921 1.287s4.068-.438 5.921-1.287a.074.074 0 0 1 .082.009c.16.148.312.299.463.462a.076.076 0 0 1-.011.114 15.78 15.78 0 0 1-2.244 1.154.074.074 0 0 0-.041.106c.352.699.764 1.364 1.226 1.994a.078.078 0 0 0 .084.028 19.9 19.9 0 0 0 5.993-3.03.082.082 0 0 0 .031-.057c.419-4.475-.434-9.01-2.631-13.657a.07.07 0 0 0-.032-.028zM8.386 14.568c-1.023 0-1.86-.94-1.86-2.097s.83-2.097 1.86-2.097c1.03 0 1.867.94 1.867 2.097s-.83 2.097-1.867 2.097zm7.228 0c-1.023 0-1.86-.94-1.86-2.097s.83-2.097 1.86-2.097c1.03 0 1.867.94 1.867 2.097s-.83 2.097-1.867 2.097z"/></svg>
+                Se connecter avec Discord
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('mousemove', (e) => {
+            document.body.style.setProperty('--mouse-x', e.clientX + 'px');
+            document.body.style.setProperty('--mouse-y', e.clientY + 'px');
+        });
+    </script>
+</body>
+</html>
