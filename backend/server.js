@@ -1,6 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const isStaff = require("./middleware/isStaff");
+const isLinked = require("./middleware/isLinked");
 
 const pool = require("./config/db");
 
@@ -18,6 +20,10 @@ app.use(
 app.use(express.json());
 
 let cache = { data: null, lastUpdated: 0 };
+
+app.get("/api/test-staff", isStaff, (req, res) => {
+  res.json({ success: true, message: "Tu es staff" });
+});
 
 app.get("/api/server-info", async (req, res) => {
   const now = Date.now();
