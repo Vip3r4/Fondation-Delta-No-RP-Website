@@ -137,7 +137,7 @@
                     return;
                 }
 
-                document.getElementById('top-player').textContent = players[0]?.discord_username || 'Joueur En Jeu';
+                document.getElementById('top-player').textContent = players[0]?.steam_username || 'Joueur En Jeu';
                 document.getElementById('player-count').textContent = players.length;
                 
                 const totalHours = players.reduce((sum, p) => sum + (parseFloat(p.play_time_hours) || 0), 0);
@@ -172,7 +172,7 @@
                                 <div class="player-header">
                                     <img src="${player.steam_avatar || 'images/logo (1).svg'}" class="player-avatar" alt="Avatar" onerror="this.src='images/logo (1).svg'">
                                     <div class="player-details">
-                                        <span class="player-name">${player.discord_username || 'Joueur En Jeu'}</span>
+                                        <span class="player-name">${player.steam_username || 'Joueur En Jeu'}</span>
                                     </div>
                                 </div>
                             </div>
