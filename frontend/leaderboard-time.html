@@ -141,7 +141,8 @@
                 document.getElementById('player-count').textContent = players.length;
                 
                 const totalHours = players.reduce((sum, p) => sum + (parseFloat(p.play_time_hours) || 0), 0);
-                document.getElementById('total-time').textContent = totalHours + 'h';
+                const roundedHours = Math.round(totalHours * 10) / 10;
+                document.getElementById('total-time').textContent = roundedHours + 'h';
 
                 players.forEach((player, index) => {
                     const rank = index + 1;
