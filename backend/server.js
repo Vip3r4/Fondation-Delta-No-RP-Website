@@ -13,6 +13,45 @@ const pool = require("./config/db");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const API_KEYS = process.env.API_KEYS ? process.env.API_KEYS.split(',') : [];
+
+function validateApiKey(req, res, next) {
+    const gameToken = req.headers['x-game-token'];
+    if (gameToken && gameToken === process.env.GAME_API_TOKEN) {
+        return next();
+    }
+    
+    const apiKey = req.headers['x-api-key'];
+    if (!apiKey || !API_KEYS.includes(apiKey)) {
+        return res.status(401).json({ 
+            error: 'API key required',
+            message: 'Cette clé API est invalide ou manquante'
+        });
+    }
+    next();
+}
+
+function blockEndpointDiscovery(req, res, next) {
+    const suspiciousPatterns = [
+        /\.\.\//,
+        /\/api\/v\d/,
+        /\/admin/,
+        /\/\.env/,
+        /\/config/,
+        /\/swagger/,
+        /\/docs/,
+        /\/_/,
+        /\/server\.js/,
+        /\/app\.js/,
+    ];
+    
+    if (suspiciousPatterns.some(p => p.test(req.path))) {
+        console.warn(`⚠️ Suspicious request: ${req.ip} - ${req.method} ${req.path}`);
+        return res.status(404).json({ error: 'Not found' });
+    }
+    next();
+}
+
 // ========== SÉCURITÉ ==========
 
 app.use(helmet({
@@ -27,9 +66,11 @@ app.use(helmet({
     },
 }));
 
+app.use(blockEndpointDiscovery);
+
 app.use(
   cors({
-    origin: "https://sitedeltadarkrp.fr",
+    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : "https://sitedeltadarkrp.fr",
     methods: ["GET", "POST"],
     credentials: true,
   })
@@ -50,9 +91,25 @@ const authLimiter = rateLimit({
     message: "Trop de tentatives, veuillez réessayer dans 15 minutes.",
 });
 
+const strictLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 20, // 20 requêtes max
+    message: "Trop de requêtes, ralentissez.",
+});
+
 app.use("/api/link/generate-code", authLimiter);
 app.use("/api/link/verify-code", authLimiter);
 app.use("/api/link/check-status", authLimiter);
+
+// ========== NOUVEAU : Rate limit pour les endpoints publics ==========
+const publicLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 30,
+    message: "Trop de requêtes, réessayez dans une minute.",
+});
+app.use("/api/leaderboard", publicLimiter);
+app.use("/api/profile", publicLimiter);
+app.use("/api/server-info", publicLimiter);
 
 function sanitizeString(str) {
     if (!str || typeof str !== "string") return "";
@@ -105,7 +162,14 @@ app.get("/api/server-info", async (req, res) => {
 });
 
 /* ---------------- STATS JOUEURS ---------------- */
-app.post("/api/game/stats", async (req, res) => {
+
+app.post("/api/game/stats", validateApiKey, async (req, res) => {
+
+  const gameToken = req.headers['x-game-token'];
+  if (gameToken !== process.env.GAME_API_TOKEN) {
+    return res.status(401).json({ error: "Token invalide" });
+  }
+  
   const raw_steam_id = req.body.steam_id;
   if (!raw_steam_id) return res.status(400).json({ error: "No ID" });
 
@@ -149,7 +213,13 @@ app.post("/api/game/stats", async (req, res) => {
   }
 });
 
-app.post("/api/game/time", async (req, res) => {
+app.post("/api/game/time", validateApiKey, async (req, res) => {
+
+  const gameToken = req.headers['x-game-token'];
+  if (gameToken !== process.env.GAME_API_TOKEN) {
+    return res.status(401).json({ error: "Token invalide" });
+  }
+  
   const { steam_id, minutes } = req.body;
 
   if (!steam_id || !minutes) {
@@ -190,7 +260,13 @@ app.post("/api/game/time", async (req, res) => {
   }
 });
 
-app.post("/api/game/badge", async (req, res) => {
+app.post("/api/game/badge", validateApiKey, async (req, res) => {
+
+  const gameToken = req.headers['x-game-token'];
+  if (gameToken !== process.env.GAME_API_TOKEN) {
+    return res.status(401).json({ error: "Token invalide" });
+  }
+  
   const { steam_id, badge } = req.body;
 
   if (!steam_id) {
@@ -215,6 +291,7 @@ app.post("/api/game/badge", async (req, res) => {
 });
 
 /* ------------- LEADERBOARD -------------- */
+
 app.get("/api/leaderboard/kills", async (req, res) => {
   try {
     const result = await pool.query(`
@@ -327,15 +404,45 @@ app.get("/api/profile/:steamid", async (req, res) => {
   }
 });
 
+app.get("/api/profile/me", auth, isLinked, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT 
+        steam_id, 
+        steam_username,
+        discord_username,
+        steam_avatar,
+        kills, 
+        deaths, 
+        COALESCE(ROUND(play_time::numeric / 60, 1), 0) as play_time_hours, 
+        ROUND(COALESCE(kills, 0)::numeric / GREATEST(COALESCE(deaths, 0), 1), 2) as kda,
+        current_in_game_badge,
+        is_banned
+      FROM users
+      WHERE steam_id = $1`,
+      [req.steam_id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Profil non trouvé" });
+    }
+    
+    res.json({ success: true, profile: result.rows[0] });
+  } catch (error) {
+    console.error("Erreur profil/me:", error.message);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+});
+
 /* ----------------- DISCORD LINK --------------------- */
-app.post("/api/link/generate-code", async (req, res) => {
+
+app.post("/api/link/generate-code", auth, async (req, res) => {
   let { discord_id, discord_username } = req.body;
 
   if (!discord_id || !discord_username) {
     return res.status(400).json({ error: "Discord ID et username requis" });
   }
 
-  // Validation
   if (typeof discord_id !== "string" || discord_id.length > 32 || !/^\d+$/.test(discord_id)) {
     return res.status(400).json({ error: "Discord ID invalide" });
   }
@@ -368,7 +475,7 @@ app.post("/api/link/generate-code", async (req, res) => {
   }
 });
 
-app.get("/api/link/check-status", async (req, res) => {
+app.get("/api/link/check-status", auth, async (req, res) => {
   const { discord_id } = req.query;
 
   if (!discord_id) {
@@ -486,6 +593,7 @@ app.post("/api/link/verify-code", async (req, res) => {
 });
 
 /* ----------------- STAFF ROUTES ----------------- */
+
 app.get("/api/staff/players", auth, isStaff, async (req, res) => {
   try {
     const result = await pool.query(`
@@ -501,7 +609,7 @@ app.get("/api/staff/players", auth, isStaff, async (req, res) => {
   }
 });
 
-app.post("/api/staff/warn", async (req, res) => {
+app.post("/api/staff/warn", auth, isStaff, async (req, res) => {
   let { steam_id, reason, moderator_name } = req.body;
 
   const cleanSteamId = validateSteamId(steam_id);
@@ -514,7 +622,7 @@ app.post("/api/staff/warn", async (req, res) => {
   }
 
   reason = sanitizeString(reason);
-  moderator_name = moderator_name ? sanitizeString(moderator_name).substring(0, 64) : "Inconnu";
+  moderator_name = moderator_name ? sanitizeString(moderator_name).substring(0, 64) : req.user.discord_username || "Inconnu";
 
   try {
     await pool.query(
@@ -620,10 +728,14 @@ app.get("/auth/discord/callback", async (req, res) => {
 
     const { id, username, avatar } = userResponse.data;
 
-    const isStaff = false;
+    let isStaffUser = false;
+    const staffIds = process.env.STAFF_DISCORD_IDS ? process.env.STAFF_DISCORD_IDS.split(',') : [];
+    if (staffIds.includes(id)) {
+      isStaffUser = true;
+    }
 
     const token = jwt.sign(
-      { discord_id: id, discord_username: sanitizeString(username), avatar: avatar, isStaff: isStaff },
+      { discord_id: id, discord_username: sanitizeString(username), avatar: avatar, isStaff: isStaffUser },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );

@@ -1,29 +1,27 @@
 const pool = require("../config/db");
 
 async function isLinked(req, res, next) {
-  const steam_id = req.params.steamid || req.body.steam_id;
-
-  if (!steam_id) {
-    return res.status(400).json({ 
+  if (!req.user || !req.user.discord_id) {
+    return res.status(401).json({ 
       success: false, 
-      error: "steam_id manquant" 
+      error: "Non authentifié" 
     });
   }
 
   try {
     const result = await pool.query(
-      "SELECT steam_id FROM users WHERE steam_id = $1",
-      [steam_id]
+      "SELECT steam_id FROM users WHERE discord_id = $1",
+      [req.user.discord_id]
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ 
+    if (result.rows.length === 0 || !result.rows[0].steam_id) {
+      return res.status(403).json({ 
         success: false, 
-        error: "Joueur non trouvé ou compte non lié" 
+        error: "Compte Steam non lié. Utilisez /link.html pour lier votre compte." 
       });
     }
 
-    req.steam_id = steam_id;
+    req.steam_id = result.rows[0].steam_id;
     next();
   } catch (error) {
     console.error("Erreur isLinked:", error.message);

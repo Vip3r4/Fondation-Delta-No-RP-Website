@@ -1,27 +1,21 @@
-const STAFF_API_KEY = process.env.STAFF_API_KEY;
+const pool = require("../config/db");
 
-function isStaff(req, res, next) {
+async function isStaff(req, res, next) {
+  if (req.user && req.user.isStaff) {
+    return next();
+  }
+  
   const apiKey = req.headers['x-api-key'];
-
-  console.log("Clé reçue :", apiKey);
-  console.log("Clé attendue :", STAFF_API_KEY);
-  console.log("Comparaison :", apiKey === STAFF_API_KEY);
-
-  if (!apiKey) {
-    return res.status(403).json({ 
-      success: false, 
-      error: "Accès refusé. Clé API manquante." 
-    });
+  const validApiKeys = process.env.API_KEYS ? process.env.API_KEYS.split(',') : [];
+  
+  if (apiKey && validApiKeys.includes(apiKey)) {
+    return next();
   }
 
-  if (apiKey !== STAFF_API_KEY) {
-    return res.status(403).json({ 
-      success: false, 
-      error: "Accès refusé. Clé API invalide." 
-    });
-  }
-
-  next();
+  return res.status(403).json({ 
+    success: false, 
+    error: "Accès refusé - Droits staff requis" 
+  });
 }
 
 module.exports = isStaff;
