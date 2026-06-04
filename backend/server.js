@@ -609,32 +609,46 @@ app.get("/api/staff/players", auth, isStaff, async (req, res) => {
   }
 });
 
-app.post("/api/staff/warn", auth, isStaff, async (req, res) => {
-  let { steam_id, reason, moderator_name } = req.body;
-
-  const cleanSteamId = validateSteamId(steam_id);
-  if (!cleanSteamId) {
-    return res.status(400).json({ error: "steam_id invalide" });
+app.post("/api/staff/warn", async (req, res) => {
+  const apiKey = req.headers['x-api-key'];
+  const validApiKeys = process.env.API_KEYS ? process.env.API_KEYS.split(',') : [];
+  
+  console.log("=== DEBUG STAFF WARN ===");
+  console.log("API Key reçue:", apiKey);
+  console.log("API Keys valides:", validApiKeys);
+  
+  if (apiKey && validApiKeys.includes(apiKey)) {
+    console.log("✅ Clé API valide, traitement...");
+    let { steam_id, reason, moderator_name } = req.body;
+    
+    const cleanSteamId = validateSteamId(steam_id);
+    if (!cleanSteamId) {
+      console.log("❌ Steam ID invalide:", steam_id);
+      return res.status(400).json({ error: "steam_id invalide" });
+    }
+    if (!reason || typeof reason !== "string" || reason.length > 500) {
+      console.log("❌ Raison invalide:", reason);
+      return res.status(400).json({ error: "raison invalide (max 500 caractères)" });
+    }
+    reason = sanitizeString(reason);
+    moderator_name = moderator_name ? sanitizeString(moderator_name).substring(0, 64) : "Inconnu";
+    
+    try {
+      await pool.query(
+        `INSERT INTO warns_bans (steamid, type, reason, moderator_name, is_active)
+         VALUES ($1, 'warn', $2, $3, true)`,
+        [cleanSteamId, reason, moderator_name]
+      );
+      console.log("✅ Warn ajouté avec succès");
+      return res.json({ success: true });
+    } catch (error) {
+      console.error("❌ Erreur SQL:", error.message);
+      return res.status(500).json({ error: "Erreur serveur" });
+    }
   }
-
-  if (!reason || typeof reason !== "string" || reason.length > 500) {
-    return res.status(400).json({ error: "raison invalide (max 500 caractères)" });
-  }
-
-  reason = sanitizeString(reason);
-  moderator_name = moderator_name ? sanitizeString(moderator_name).substring(0, 64) : req.user.discord_username || "Inconnu";
-
-  try {
-    await pool.query(
-      `INSERT INTO warns_bans (steamid, type, reason, moderator_name, is_active)
-       VALUES ($1, 'warn', $2, $3, true)`,
-      [cleanSteamId, reason, moderator_name]
-    );
-    res.json({ success: true });
-  } catch (error) {
-    console.error("Erreur ajout warn:", error.message);
-    res.status(500).json({ error: "Erreur serveur" });
-  }
+  
+  console.log("❌ Aucune clé API valide trouvée");
+  return res.status(401).json({ error: "Token manquant ou invalide" });
 });
 
 app.post("/api/staff/ban", auth, isStaff, async (req, res) => {

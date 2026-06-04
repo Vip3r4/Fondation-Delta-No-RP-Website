@@ -136,16 +136,9 @@
 
     <div id="modal" class="modal">
         <div class="modal-content">
-            <h3 id="modalTitle">Ajouter une sanction</h3>
+            <h3 id="modalTitle">Ajouter un warn</h3>
             <input type="hidden" id="modalSteamId">
             <input type="text" id="modalReason" placeholder="Raison">
-            <select id="modalDuration">
-                <option value="null">Permanent</option>
-                <option value="60">1 heure</option>
-                <option value="1440">24 heures</option>
-                <option value="10080">7 jours</option>
-                <option value="43200">30 jours</option>
-            </select>
             <div class="modal-buttons">
                 <button class="btn btn-outline" id="modalCancel">Annuler</button>
                 <button class="btn btn-primary" id="modalConfirm">Confirmer</button>
@@ -156,7 +149,6 @@
     <script>
         const API_URL = "https://api.sitedeltadarkrp.fr";
 
-        // Fonction d'échappement HTML pour prévenir les XSS
         function escapeHtml(str) {
             if (!str) return '';
             return str.replace(/[&<>]/g, function(m) {
@@ -177,7 +169,6 @@
 
         const token = localStorage.getItem("token");
         let currentUser = null;
-        let currentModalType = null;
         let currentModalTarget = null;
 
         if (!token) {
@@ -235,7 +226,6 @@
         }
 
         function displayProfile(profile) {
-            // Échappement des données utilisateur
             const steamUsername = escapeHtml(profile.steam_username || 'Joueur');
             const steamId = escapeHtml(profile.steam_id);
             const discordUsername = profile.discord_username ? `<div class="user-badge">Discord: ${escapeHtml(profile.discord_username)}</div>` : '';
@@ -308,23 +298,21 @@
             }
             container.innerHTML = `
                 <table class="player-table">
-                    <thead><tr><th>Joueur</th><th>Kills</th><th>Playtime</th><th>Actions</th></tr></thead>
+                    <thead><tr><th>Joueur</th><th>Kills</th><th>Playtime</th><th>Action</th></tr></thead>
                     <tbody>${players.map(p => `
                         <tr class="player-row">
                             <td><strong>${escapeHtml(p.steam_username || p.steam_id)}</strong><br><small>${escapeHtml(p.steam_id)}</small></td>
                             <td>${p.kills || 0}</td>
                             <td>${Math.floor((p.play_time || 0) / 60)}h</td>
-                            <td><button class="btn btn-outline" onclick="showSanctionModal('${escapeHtml(p.steam_id)}', 'warn')">Warn</button> <button class="btn btn-danger" onclick="showSanctionModal('${escapeHtml(p.steam_id)}', 'ban')">Ban</button></td>
+                            <td><button class="btn btn-outline" onclick="showWarnModal('${escapeHtml(p.steam_id)}')">Warn</button> </td>
                         </tr>
                     `).join('')}</tbody>
                 </table>
             `;
         }
 
-        function showSanctionModal(steamId, type) {
-            currentModalType = type;
+        function showWarnModal(steamId) {
             currentModalTarget = steamId;
-            document.getElementById("modalTitle").innerText = type === 'warn' ? 'Ajouter un warn' : 'Bannir le joueur';
             document.getElementById("modalSteamId").value = steamId;
             document.getElementById("modalReason").value = '';
             document.getElementById("modal").classList.add("active");
@@ -332,19 +320,16 @@
 
         document.getElementById("modalConfirm").onclick = async () => {
             const reason = document.getElementById("modalReason").value;
-            const duration = document.getElementById("modalDuration").value;
             if (!reason) {
                 alert("Veuillez entrer une raison");
                 return;
             }
             
-            const endpoint = currentModalType === 'warn' ? '/api/staff/warn' : '/api/staff/ban';
-            await fetchApi(endpoint, {
+            await fetchApi("/api/staff/warn", {
                 method: "POST",
                 body: JSON.stringify({
                     steam_id: currentModalTarget,
-                    reason: reason,
-                    duration_minutes: duration === 'null' ? null : parseInt(duration)
+                    reason: reason
                 })
             });
             
