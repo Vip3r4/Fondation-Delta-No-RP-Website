@@ -651,40 +651,92 @@ app.post("/api/staff/warn", async (req, res) => {
   return res.status(401).json({ error: "Token manquant ou invalide" });
 });
 
-app.post("/api/staff/ban", auth, isStaff, async (req, res) => {
-  let { steam_id, reason, duration_minutes } = req.body;
+app.post("/api/staff/ban", async (req, res) => {
+  const apiKey = req.headers['x-api-key'];
+  const validApiKeys = process.env.API_KEYS ? process.env.API_KEYS.split(',') : [];
 
-  const cleanSteamId = validateSteamId(steam_id);
-  if (!cleanSteamId) {
-    return res.status(400).json({ error: "steam_id invalide" });
-  }
-
-  if (!reason || typeof reason !== "string" || reason.length > 500) {
-    return res.status(400).json({ error: "raison invalide (max 500 caractères)" });
-  }
-
-  reason = sanitizeString(reason);
-  
-  let duration = null;
-  if (duration_minutes && !isNaN(parseInt(duration_minutes))) {
-    duration = parseInt(duration_minutes);
-    if (duration <= 0 || duration > 525600) { // max 1 an
-      return res.status(400).json({ error: "durée invalide" });
+  if (apiKey && validApiKeys.includes(apiKey)) {
+    let { steam_id, reason, duration_minutes, moderator_name } = req.body;
+    
+    const cleanSteamId = validateSteamId(steam_id);
+    if (!cleanSteamId) {
+      return res.status(400).json({ error: "steam_id invalide" });
+    }
+    if (!reason || typeof reason !== "string" || reason.length > 500) {
+      return res.status(400).json({ error: "raison invalide (max 500 caractères)" });
+    }
+    
+    reason = sanitizeString(reason);
+    const moderator = moderator_name ? sanitizeString(moderator_name).substring(0, 64) : "Inconnu";
+    
+    let duration = null;
+    if (duration_minutes && !isNaN(parseInt(duration_minutes))) {
+      duration = parseInt(duration_minutes);
+      if (duration <= 0 || duration > 525600) {
+        return res.status(400).json({ error: "durée invalide" });
+      }
+    }
+    
+    const expires_at = duration ? new Date(Date.now() + duration * 60000) : null;
+    
+    try {
+      await pool.query(
+        `INSERT INTO warns_bans (steamid, type, reason, moderator_name, duration_minutes, expires_at, is_active)
+         VALUES ($1, 'ban', $2, $3, $4, $5, true)`,
+        [cleanSteamId, reason, moderator, duration, expires_at]
+      );
+      await pool.query("UPDATE users SET is_banned = true WHERE steam_id = $1", [cleanSteamId]);
+      return res.json({ success: true });
+    } catch (error) {
+      console.error("Erreur ajout ban:", error.message);
+      return res.status(500).json({ error: "Erreur serveur" });
     }
   }
   
-  const expires_at = duration ? new Date(Date.now() + duration * 60000) : null;
-
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Token manquant ou invalide" });
+  }
+  
+  const token = authHeader.split(" ")[1];
+  
   try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded.isStaff) {
+      return res.status(403).json({ error: "Non staff" });
+    }
+    
+    let { steam_id, reason, duration_minutes } = req.body;
+    
+    const cleanSteamId = validateSteamId(steam_id);
+    if (!cleanSteamId) {
+      return res.status(400).json({ error: "steam_id invalide" });
+    }
+    if (!reason || typeof reason !== "string" || reason.length > 500) {
+      return res.status(400).json({ error: "raison invalide (max 500 caractères)" });
+    }
+    
+    reason = sanitizeString(reason);
+    
+    let duration = null;
+    if (duration_minutes && !isNaN(parseInt(duration_minutes))) {
+      duration = parseInt(duration_minutes);
+      if (duration <= 0 || duration > 525600) {
+        return res.status(400).json({ error: "durée invalide" });
+      }
+    }
+    
+    const expires_at = duration ? new Date(Date.now() + duration * 60000) : null;
+    
     await pool.query(
       `INSERT INTO warns_bans (steamid, type, reason, moderator_name, duration_minutes, expires_at, is_active)
        VALUES ($1, 'ban', $2, $3, $4, $5, true)`,
-      [cleanSteamId, reason, req.user.discord_username, duration, expires_at]
+      [cleanSteamId, reason, decoded.discord_username, duration, expires_at]
     );
     await pool.query("UPDATE users SET is_banned = true WHERE steam_id = $1", [cleanSteamId]);
     res.json({ success: true });
   } catch (error) {
-    console.error("Erreur ajout ban:", error.message);
+    console.error("Erreur ajout ban JWT:", error.message);
     res.status(500).json({ error: "Erreur" });
   }
 });
