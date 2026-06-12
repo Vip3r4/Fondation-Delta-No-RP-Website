@@ -782,9 +782,9 @@ body::before {
 }
 
 .staff-grade.fondateur {
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.3));
-    color: #001725;
-    border: 1px solid rgba(255, 215, 0, 0.5);
+    background: linear-gradient(135deg,rgba(0, 23, 37, 0.35), rgba(0, 45, 70, 0.35));
+    color: #00324d;
+    border: 1px solid rgba(127, 211, 255, 0.4);
 }
 
 .staff-grade.director {
