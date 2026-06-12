@@ -783,7 +783,7 @@ body::before {
 
 .staff-grade.fondateur {
     background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.3));
-    color: #FFD700;
+    color: #001725;
     border: 1px solid rgba(255, 215, 0, 0.5);
 }
 
@@ -793,7 +793,7 @@ body::before {
     border: 1px solid rgba(255, 69, 0, 0.5);
 }
 
-.staff-grade.moderateur {
+.staff-grade.moderateur-recrue {
     background: linear-gradient(135deg, rgba(0, 191, 255, 0.2), rgba(30, 144, 255, 0.2));
     color: #00BFFF;
     border: 1px solid rgba(30, 144, 255, 0.5);
